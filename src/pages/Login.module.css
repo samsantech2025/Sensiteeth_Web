@@ -1,82 +1,129 @@
-/* Login.module.css */
-
+/* Container with modern teal gradient */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(0, 105, 92, 0.2), #f5f7fa); /* Teal to light grey */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
+/* Card with sleek design */
 .card {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  max-width: 100%;
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle white gradient */
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.2); /* Teal shadow */
+  width: 100%;
+  max-width: 400px; /* Slightly wider for modern feel */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Modern spacing */
+  transition: transform 0.3s ease-in-out;
 }
 
+.card:hover {
+  transform: translateY(-5px); /* Subtle lift effect */
+}
+
+/* Title with modern teal typography */
 .title {
   text-align: center;
-  color: #333;
-  margin-bottom: 1.5rem;
+  color: #00695c; /* Teal */
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
 }
 
+/* Subtitle for added context */
+.subtitle {
+  text-align: center;
+  color: #757575; /* Grey */
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Input group for better spacing */
+.inputGroup {
+  margin-bottom: 15px;
+}
+
+/* Modern input design */
 .input {
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   box-sizing: border-box;
+  font-size: 16px;
+  color: #212121; /* Black87 */
+  background: #ffffff; /* White */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .input:focus {
   outline: none;
-  border-color: #1877f2;
-  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+  border-color: #00695c; /* Teal */
+  box-shadow: 0 0 4px rgba(0, 105, 92, 0.3); /* Teal glow */
 }
 
+/* Error message with modern styling */
 .error {
-  color: #e44d3a;
-  font-size: 0.9rem;
+  color: #e44d3a; /* Red */
+  font-size: 14px;
   margin-bottom: 10px;
+  text-align: center;
+  background: rgba(228, 77, 58, 0.1); /* Light red background */
+  padding: 8px;
+  border-radius: 8px;
 }
 
+/* Modern button design */
 .button {
   width: 100%;
-  padding: 10px;
-  background-color: #1877f2;
-  color: white;
+  padding: 12px;
+  background: linear-gradient(to bottom, #00695c, #004d40); /* Teal gradient */
+  color: #ffffff; /* White */
   border: none;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0, 105, 92, 0.5); /* Teal shadow */
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
 .button:hover {
-  background-color: #166fe5;
+  background: #003d33; /* Darker teal */
+  transform: translateY(-2px); /* Lift effect */
 }
 
 .button:disabled {
-  background-color: #b8b8b8;
+  background: #757575; /* Grey */
+  box-shadow: none;
   cursor: not-allowed;
 }
 
+/* Text with modern link styling */
 .text {
   text-align: center;
   margin-top: 15px;
-  font-size: 0.9rem;
+  font-size: 14px;
   color: #666;
 }
 
 .link {
-  color: #1877f2;
+  color: #00695c; /* Teal */
   cursor: pointer;
   text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
 }
 
 .link:hover {
+  color: #004d40; /* Darker teal */
   text-decoration: underline;
 }

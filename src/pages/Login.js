@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient"; // Adjust the path as needed
+import { supabase } from "../supabaseClient";
 import styles from "./Login.module.css";
 
 const Login = () => {
@@ -15,12 +15,10 @@ const Login = () => {
     setError(null);
     setLoading(true);
 
-    // Sign in with Supabase using email and password
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
 
     setLoading(false);
 
@@ -29,7 +27,6 @@ const Login = () => {
       return;
     }
 
-    // After login, query the "users" table to get the user's role
     const { data: userData, error: userError } = await supabase
       .from("Users")
       .select("role")
@@ -43,7 +40,6 @@ const Login = () => {
 
     const role = userData.role;
 
-    // Navigate based on the user's role
     if (role === "patient") {
       navigate("/patient-dashboard");
     } else if (role === "dentist") {
@@ -56,31 +52,36 @@ const Login = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Login</h2>
+        <h2 className={styles.title}>Welcome Back</h2>
+        <p className={styles.subtitle}>Sign in to your dental account</p>
         <form onSubmit={handleLogin}>
           {error && <p className={styles.error}>{error}</p>}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-            required
-          />
+          <div className={styles.inputGroup}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={styles.input}
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={styles.input}
+              required
+            />
+          </div>
           <button type="submit" className={styles.button} disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className={styles.text}>
-          Don't have an account?{" "}
+          Don’t have an account?{" "}
           <span onClick={() => navigate("/signup")} className={styles.link}>
             Sign Up
           </span>

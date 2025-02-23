@@ -1,4 +1,3 @@
-// src/pages/Signup.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -37,7 +36,6 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      // Step 1: Sign up with Supabase auth
       const { data: { user }, error: signUpError } = await supabase.auth.signUp(
         { email, password },
         { data: { role } }
@@ -53,7 +51,6 @@ const Signup = () => {
 
       console.log("Auth signup successful:", user);
 
-      // Step 2: Insert into Users table
       const { error: userInsertError } = await supabase
         .from("Users")
         .insert([{ email, role }]);
@@ -64,7 +61,6 @@ const Signup = () => {
 
       console.log("Users table insert successful");
 
-      // Step 3: Insert into appropriate table based on role
       if (role === "patient") {
         const { error: patientInsertError } = await supabase
           .from("Patient")
@@ -87,7 +83,7 @@ const Signup = () => {
 
       setLoading(false);
       alert("Signup successful! Please check your email to verify your account, then sign in.");
-      navigate("/"); // Redirect to login page
+      navigate("/");
 
     } catch (error) {
       console.error("Signup error:", error);
@@ -99,46 +95,55 @@ const Signup = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Sign Up</h2>
+        <h2 className={styles.title}>Create Account</h2>
+        <p className={styles.subtitle}>Join our dental community</p>
         <form onSubmit={handleSignup}>
           {error && <p className={styles.error}>{error}</p>}
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className={styles.input}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className={styles.input}
-            required
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={styles.input}
-            required
-          />
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className={styles.select}
-            required
-          >
-            <option value="patient">Patient</option>
-            <option value="dentist">Dentist</option>
-          </select>
+          <div className={styles.inputGroup}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className={styles.input}
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className={styles.input}
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={styles.input}
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={styles.input}
+              required
+            >
+              <option value="patient">Patient</option>
+              <option value="dentist">Dentist</option>
+            </select>
+          </div>
           <button type="submit" className={styles.button} disabled={loading}>
             {loading ? "Signing up..." : "Sign Up"}
           </button>

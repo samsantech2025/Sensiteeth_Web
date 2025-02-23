@@ -1,0 +1,238 @@
+/* Dashboard container with modern teal gradient */
+.dashboard {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(0, 105, 92, 0.3), #f5f7fa); /* Enhanced teal gradient */
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif; /* Modern font */
+}
+
+/* Header with teal accent */
+.header {
+  background: linear-gradient(to right, #00695c, #004d40); /* Teal gradient */
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Teal shadow */
+  color: #ffffff; /* White text */
+}
+
+/* Title with modern typography */
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Logout button in header */
+.logoutButton {
+  padding: 8px 16px;
+  background: #ffffff; /* White background */
+  color: #00695c; /* Teal text */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 105, 92, 0.2); /* Teal shadow */
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.logoutButton:hover {
+  background: #e0f2f1; /* Light teal hover */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+/* Main content area */
+.content {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Modern spacing between sections */
+}
+
+/* Section with clean styling */
+.section {
+  width: 100%;
+}
+
+/* Subtitle with modern teal typography */
+.subtitle {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #00695c; /* Teal */
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-align: left;
+}
+
+/* Card container for appointments and history */
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  gap: 20px;
+}
+
+/* Card design for appointments and history */
+.card {
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle white gradient */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.2); /* Enhanced teal shadow */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Lift effect */
+  box-shadow: 0 6px 16px rgba(0, 105, 92, 0.3); /* Stronger shadow on hover */
+}
+
+/* Card content */
+.card p {
+  margin: 5px 0;
+  color: #212121; /* Black87 */
+  font-size: 16px;
+}
+
+.card p strong {
+  color: #00695c; /* Teal */
+  font-weight: 600;
+}
+
+/* Action button with modern teal design */
+.actionButton {
+  padding: 6px 12px;
+  margin-right: 5px;
+  background: linear-gradient(to bottom, #00695c, #004d40); /* Teal gradient */
+  color: #ffffff; /* White */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 105, 92, 0.5); /* Teal shadow */
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.actionButton:hover {
+  background: #003d33; /* Darker teal */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+.actionButton:disabled {
+  background-color: #757575; /* Grey */
+  box-shadow: none; /* Remove shadow when disabled */
+}
+
+/* Primary button for scheduling */
+.button {
+  padding: 10px 20px;
+  background: linear-gradient(to bottom, #00695c, #004d40); /* Teal gradient */
+  color: #ffffff; /* White */
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 105, 92, 0.5); /* Teal shadow */
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.button:hover {
+  background: #003d33; /* Darker teal */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+/* Placeholder text for empty sections */
+.noData {
+  text-align: center;
+  color: #757575; /* Grey */
+  font-size: 16px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 105, 92, 0.1); /* Light teal shadow */
+}
+
+/* Textarea with teal focus state */
+.textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #212121; /* Black87 */
+  background: #ffffff; /* White */
+  transition: border-color 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 105, 92, 0.1); /* Subtle teal shadow */
+  resize: vertical;
+}
+
+.textarea:focus {
+  border-color: #00695c; /* Teal */
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 105, 92, 0.3); /* Subtle teal glow */
+}
+
+/* Modal overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal with modern design */
+.modal {
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle gradient */
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh; /* Limit height */
+  overflow-y: auto; /* Scroll if needed */
+  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Enhanced teal shadow */
+}
+
+/* Modal title */
+.modal h3 {
+  margin-top: 0;
+  color: #00695c; /* Teal */
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Modal content */
+.modal p {
+  margin: 10px 0;
+  color: #212121; /* Black87 */
+  font-size: 16px;
+}
+
+.modal p strong {
+  color: #00695c; /* Teal */
+  font-weight: 600;
+}
+
+/* Modal buttons */
+.modalButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}

@@ -1,4 +1,3 @@
-// src/components/AppointmentModal.js
 import React, { useState, useEffect } from 'react';
 import styles from './AppointmentModal.module.css';
 
@@ -18,9 +17,9 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  const [dateError, setDateError] = useState(null);
 
   // Prefill form data when modal opens or appointment/patientData/userEmail changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isOpen) {
       if (appointment) {
@@ -52,15 +51,30 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
         ...prevState,
         [name]: value
       }));
+
+      if (name === "AppointmentDate") {
+        const currentDate = new Date();
+        const selectedDate = new Date(value);
+        if (selectedDate < currentDate) {
+          setDateError("Appointment date and time cannot be earlier than now.");
+        } else {
+          setDateError(null);
+        }
+      }
     }
   };
 
   const clearForm = () => {
     setFormData({ ...initialFormData, Email: userEmail || '' });
+    setDateError(null);
   };
 
   const submitForm = async (e) => {
     e.preventDefault();
+    if (dateError) {
+      alert(dateError);
+      return;
+    }
     console.log('Form Data:', formData);
     await handleSubmit(formData);
     clearForm();
@@ -82,6 +96,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="FirstName" 
                 value={formData.FirstName} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
             </div>
@@ -93,6 +108,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="MiddleName" 
                 value={formData.MiddleName} 
                 onChange={handleChange} 
+                className={styles.inputField}
               />
             </div>
             <div>
@@ -103,6 +119,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="LastName" 
                 value={formData.LastName} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
             </div>
@@ -114,6 +131,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="Age" 
                 value={formData.Age} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
             </div>
@@ -125,6 +143,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="BirthDate" 
                 value={formData.BirthDate} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
             </div>
@@ -136,6 +155,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="Email" 
                 value={formData.Email} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 disabled 
                 required 
               />
@@ -148,6 +168,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="Address" 
                 value={formData.Address} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
             </div>
@@ -158,6 +179,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="Gender" 
                 value={formData.Gender} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required
               >
                 <option value="">Select Gender</option>
@@ -174,6 +196,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="ContactNo" 
                 value={formData.ContactNo} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
             </div>
@@ -184,6 +207,7 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
                 id="dentist" 
                 value={formData.DentistId} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required
               >
                 <option value="">Select Dentist</option>
@@ -195,18 +219,20 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
             <div>
               <label htmlFor="AppointmentDate">Appointment Date:</label>
               <input 
-                type="date" 
+                type="datetime-local" 
                 name="AppointmentDate" 
                 id="AppointmentDate" 
                 value={formData.AppointmentDate} 
                 onChange={handleChange} 
+                className={styles.inputField}
                 required 
               />
+              {dateError && <p className={styles.error}>{dateError}</p>}
             </div>
           </div>
           <div className={styles.buttonContainer}>
             <button onClick={onClose} className={styles.closeButton}>Close</button>
-            <button type="submit" className={styles.submitButton}>Submit</button> 
+            <button type="submit" className={styles.submitButton} disabled={!!dateError}>Submit</button> 
           </div>
         </form>
       </div>

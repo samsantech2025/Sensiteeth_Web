@@ -51,7 +51,6 @@ const PatientDashboard = () => {
       setPatientData(patientData);
       console.log('Fetched Patient Data:', patientData);
 
-      // Fetch active (non-complete) consultations
       const { data: activeConsultationData, error: activeConsultationError } = await supabase
         .from('Consultation')
         .select('*, Dentist(DentistName)')
@@ -65,7 +64,6 @@ const PatientDashboard = () => {
         console.log('Fetched Active Appointments:', activeConsultationData);
       }
 
-      // Fetch completed consultations for history
       const { data: completedConsultationData, error: completedConsultationError } = await supabase
         .from('Consultation')
         .select('*, Dentist(DentistName), Diagnosis(*)')
@@ -79,7 +77,6 @@ const PatientDashboard = () => {
         console.log('Fetched Completed Consultations:', completedConsultationData);
       }
 
-      // Fetch existing patient history (if separate)
       const { data: historyData, error: historyError } = await supabase
         .from('patient_history')
         .select('*')
@@ -140,6 +137,15 @@ const PatientDashboard = () => {
 
   const handleSubmit = async (formData) => {
     console.log('Received formData:', formData);
+
+    // Validate AppointmentDate
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Reset time to midnight for date-only comparison
+    const appointmentDate = new Date(formData.AppointmentDate);
+    if (appointmentDate < currentDate) {
+      alert("Appointment date cannot be earlier than today.");
+      return;
+    }
 
     try {
       const patientDataToSave = {

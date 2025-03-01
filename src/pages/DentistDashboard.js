@@ -1,4 +1,3 @@
-// src/pages/DentistDashboard.js
 import React, { useState, useEffect } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -11,6 +10,7 @@ import ProfileContent from "./ProfileContent";
 const DentistDashboard = () => {
   const navigate = useNavigate();
   const [dentistId, setDentistId] = useState(null);
+  // eslint-disable-next-line
   const [email, setEmail] = useState('');
   const [dentistData, setDentistData] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -30,7 +30,7 @@ const DentistDashboard = () => {
 
       const { data: dentistData, error: dentistError } = await supabase
         .from('Dentist')
-        .select('id, DentistName, ContactNo, Email')
+        .select('id, DentistName, ContactNo, Email, LicenseNo, Address, LicenseNoUrl') // Fetch all fields
         .eq('Email', session.user.email)
         .single();
 
@@ -45,7 +45,8 @@ const DentistDashboard = () => {
       const currentDentistId = dentistData.id;
       setDentistId(currentDentistId);
       setDentistData(dentistData);
-      setProfileWarning(!dentistData.DentistName || !dentistData.ContactNo);
+      // Update profile warning to check all required fields
+      setProfileWarning(!dentistData.DentistName || !dentistData.ContactNo || !dentistData.LicenseNo || !dentistData.Address);
       console.log('Fetched Dentist Data:', dentistData);
     };
 
@@ -75,7 +76,7 @@ const DentistDashboard = () => {
       <div className={`${styles.mainContent} ${isSidebarOpen ? styles.contentWithSidebar : styles.contentFull}`}>
         {profileWarning && !isProfileOpen && (
           <div className={styles.warning}>
-            Please complete your profile by adding your name and contact number in the Profile section.
+            Please complete your profile by adding your name, contact number, license number, and address in the Profile section.
           </div>
         )}
         <Routes>

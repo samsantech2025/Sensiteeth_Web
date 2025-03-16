@@ -41,6 +41,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <Link to="/dentist-dashboard/consultations" className={styles.sidebarLink}>Consultations</Link>
           </li>
           <li className={styles.sidebarItem}>
+            <Link to="/dentist-dashboard/calendar" className={styles.sidebarLink}>Calendar</Link>
+          </li>
+          <li className={styles.sidebarItem}>
             <Link to="/dentist-dashboard/profile" className={styles.sidebarLink}>Profile</Link>
           </li>
           <li className={styles.sidebarItem} onClick={handleSignOut}>

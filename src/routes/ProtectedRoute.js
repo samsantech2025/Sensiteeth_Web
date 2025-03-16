@@ -1,4 +1,3 @@
-// src/routes/ProtectedRoute.js
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -55,10 +54,17 @@ const ProtectedRoute = ({ children, role }) => {
   }
 
   if (!authenticated) {
-    return <Navigate to="/" />;
+    // Redirect based on the expected role
+    if (role === "patient") {
+      return <Navigate to="/PatientLogin" />;
+    } else if (role === "dentist") {
+      return <Navigate to="/" />; // Assuming a DentistLogin exists; adjust as needed
+    }
+    return <Navigate to="/" />; // Fallback for unknown roles
   }
 
   if (userRole !== role) {
+    // Redirect to home if role mismatch
     return <Navigate to="/" />;
   }
 

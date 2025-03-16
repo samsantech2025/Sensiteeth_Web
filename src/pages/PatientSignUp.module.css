@@ -1,0 +1,184 @@
+/* Container with modern dental clinic gradient */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%); /* Light blue to white */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Card with clean, dental-inspired design */
+.card {
+  background: #ffffff; /* Pure white for a clinical feel */
+  padding: 2.5rem;
+  border-radius: 16px; /* Softer corners */
+  box-shadow: 0 8px 24px rgba(0, 105, 92, 0.15); /* Subtle teal shadow */
+  width: 100%;
+  max-width: 640px; /* Wider for form fields */
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* Generous spacing */
+  border-top: 4px solid #00695c; /* Teal accent at the top */
+  transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Subtle hover lift */
+}
+
+/* Title with modern teal typography */
+.title {
+  text-align: center;
+  color: #00695c; /* Teal */
+  font-size: 30px; /* Slightly larger for emphasis */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Subtitle for added context */
+.subtitle {
+  text-align: center;
+  color: #757575; /* Grey */
+  font-size: 16px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Form grid for two-column layout */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px; /* Consistent spacing */
+}
+
+/* Input group for better spacing and label alignment */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px; /* More breathing room */
+}
+
+/* Full-width input group for address */
+.inputGroupFull {
+  grid-column: span 2;
+}
+
+/* Label styling */
+.inputGroup label {
+  color: #00695c; /* Teal */
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Modern input design */
+.input {
+  width: 100%;
+  padding: 14px; /* Taller inputs for comfort */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  color: #212121; /* Black87 */
+  background: #f9fbfc; /* Off-white for softness */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #00695c; /* Teal */
+  box-shadow: 0 0 6px rgba(0, 105, 92, 0.2); /* Teal glow */
+}
+
+.input::placeholder {
+  color: #b0bec5; /* Light grey for placeholders */
+}
+
+/* Error message with modern styling */
+.error {
+  color: #e44d3a; /* Red */
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+  background: rgba(228, 77, 58, 0.1); /* Light red background */
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* Success message with teal styling */
+.success {
+  color: #00695c; /* Teal */
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+  background: rgba(0, 105, 92, 0.1); /* Light teal background */
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* Modern button design */
+.button {
+  width: 100%;
+  padding: 14px; /* Taller button */
+  background: #00695c; /* Solid teal */
+  color: #ffffff; /* White */
+  border: none;
+  border-radius: 10px; /* Slightly rounded */
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Teal shadow */
+  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.button:hover:not(:disabled) {
+  background: #004d40; /* Darker teal */
+  transform: translateY(-2px); /* Lift effect */
+}
+
+.button:disabled {
+  background: #b0bec5; /* Grey */
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Text with modern link styling */
+.text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.link {
+  color: #00695c; /* Teal */
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: #004d40; /* Darker teal */
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .inputGroupFull {
+    grid-column: span 1;
+  }
+
+  .card {
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+}

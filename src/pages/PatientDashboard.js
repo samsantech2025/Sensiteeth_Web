@@ -13,6 +13,7 @@ const PatientDashboard = () => {
   const [isDiagnosisModalOpen, setIsDiagnosisModalOpen] = useState(false);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
   const [dentists, setDentists] = useState([]);
+  const [dentistAvailability, setDentistAvailability] = useState([]); // New state
   const [patientId, setPatientId] = useState(null);
   const [email, setEmail] = useState('');
   const [patientData, setPatientData] = useState(null);
@@ -96,6 +97,19 @@ const PatientDashboard = () => {
         setDentists(dentistsData);
         console.log('Fetched Dentists:', dentistsData);
       }
+
+      // Fetch DentistAvailability for all dentists
+      const { data: availabilityData, error: availabilityError } = await supabase
+        .from('DentistAvailability')
+        .select('DentistId, Date, IsAvailable')
+        .gte('Date', new Date().toISOString().split('T')[0]); // Future dates only
+
+      if (availabilityError) {
+        console.error("Error fetching dentist availability:", availabilityError);
+      } else {
+        setDentistAvailability(availabilityData || []);
+        console.log('Fetched Dentist Availability:', availabilityData);
+      }
     };
 
     fetchUserAndData();
@@ -104,9 +118,10 @@ const PatientDashboard = () => {
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Error signing out:", error);
+      console.error("Error signing out:", error.message);
     } else {
-      navigate("/");
+      console.log("Sign out successful, redirecting to /PatientLogin");
+      navigate("/PatientLogin");
     }
   };
 
@@ -138,9 +153,8 @@ const PatientDashboard = () => {
   const handleSubmit = async (formData) => {
     console.log('Received formData:', formData);
 
-    // Validate AppointmentDate
     const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); // Reset time to midnight for date-only comparison
+    currentDate.setHours(0, 0, 0, 0);
     const appointmentDate = new Date(formData.AppointmentDate);
     if (appointmentDate < currentDate) {
       alert("Appointment date cannot be earlier than today.");
@@ -157,7 +171,7 @@ const PatientDashboard = () => {
         Email: formData.Email,
         Address: formData.Address,
         Gender: formData.Gender,
-        ContactNo: formData.ContactNo
+        ContactNo: formData.ContactNo,
       };
 
       console.log('Patient data to save:', patientDataToSave);
@@ -208,7 +222,7 @@ const PatientDashboard = () => {
         PatientId: patientIdToUse,
         DentistId: formData.DentistId,
         Status: 'pending',
-        AppointmentDate: formData.AppointmentDate
+        AppointmentDate: formData.AppointmentDate,
       };
 
       console.log('Consultation data to be saved:', consultationData);
@@ -394,6 +408,7 @@ const PatientDashboard = () => {
         patientData={patientData}
         appointment={selectedAppointment}
         styles={styles}
+        dentistAvailability={dentistAvailability} // Pass availability to modal
       />
 
       {isDiagnosisModalOpen && (

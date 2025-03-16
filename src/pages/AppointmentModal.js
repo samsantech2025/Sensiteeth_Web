@@ -1,7 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import styles from './AppointmentModal.module.css';
+import React, { useState, useEffect, useRef } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import styles from './PatientDashboard.module.css';
 
-const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, patientData, appointment }) => {
+const AppointmentModal = ({ 
+  isOpen, 
+  onClose, 
+  dentists, 
+  handleSubmit, 
+  userEmail, 
+  patientData, 
+  appointment, 
+  dentistAvailability 
+}) => {
   const initialFormData = {
     FirstName: patientData?.FirstName || '',
     MiddleName: patientData?.MiddleName || '',
@@ -18,12 +29,12 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
 
   const [formData, setFormData] = useState(initialFormData);
   const [dateError, setDateError] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false); // Toggle calendar visibility
+  const calendarRef = useRef(null); // Ref to handle clicks outside calendar
 
-  // Prefill form data when modal opens or appointment/patientData/userEmail changes
   useEffect(() => {
     if (isOpen) {
       if (appointment) {
-        // Prefill with patient and appointment data for rescheduling
         setFormData({
           FirstName: patientData?.FirstName || '',
           MiddleName: patientData?.MiddleName || '',
@@ -38,11 +49,22 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
           AppointmentDate: appointment.AppointmentDate || ''
         });
       } else {
-        // New appointment with patient data prefilled
         setFormData({ ...initialFormData, Email: userEmail || '' });
       }
+      console.log('Dentist Availability Data:', dentistAvailability);
     }
-  }, [isOpen, userEmail, patientData, appointment]);
+  }, [isOpen, userEmail, patientData, appointment, dentistAvailability]);
+
+  // Close calendar if clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,40 +73,111 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
         ...prevState,
         [name]: value
       }));
-
-      if (name === "AppointmentDate") {
-        const currentDate = new Date();
-        const selectedDate = new Date(value);
-        if (selectedDate < currentDate) {
-          setDateError("Appointment date and time cannot be earlier than now.");
-        } else {
-          setDateError(null);
-        }
-      }
+      console.log('Form Data Updated:', { ...formData, [name]: value });
     }
+  };
+
+  const handleDateInputClick = () => {
+    setShowCalendar(true);
+  };
+
+  const handleDateSelect = (date) => {
+    const formattedDate = date.toISOString().split('T')[0];
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (date < currentDate) {
+      setDateError("Appointment date cannot be earlier than today.");
+      setShowCalendar(false);
+      return;
+    }
+
+    const dentistId = parseInt(formData.DentistId);
+    const entry = dentistAvailability.find(
+      entry => entry.DentistId === dentistId && entry.Date === formattedDate
+    );
+
+    if (!entry || !entry.IsAvailable) {
+      setDateError("This date is not available for the selected dentist.");
+      setShowCalendar(false);
+      return;
+    }
+
+    setDateError(null);
+    setFormData(prevState => ({
+      ...prevState,
+      AppointmentDate: formattedDate
+    }));
+    setShowCalendar(false); // Close calendar after selection
+    console.log('Selected Date:', formattedDate);
   };
 
   const clearForm = () => {
     setFormData({ ...initialFormData, Email: userEmail || '' });
     setDateError(null);
+    setShowCalendar(false);
   };
 
   const submitForm = async (e) => {
     e.preventDefault();
-    if (dateError) {
-      alert(dateError);
+    if (dateError || !formData.DentistId || !formData.AppointmentDate) {
+      alert(dateError || "Please select a dentist and a valid appointment date.");
       return;
     }
-    console.log('Form Data:', formData);
+
+    const formattedDate = formData.AppointmentDate;
+    const dentistId = parseInt(formData.DentistId);
+    const entry = dentistAvailability.find(
+      entry => entry.DentistId === dentistId && entry.Date === formattedDate
+    );
+
+    if (!entry || !entry.IsAvailable) {
+      alert("The selected date is not available for this dentist.");
+      return;
+    }
+
+    console.log('Submitting Form Data:', formData);
     await handleSubmit(formData);
     clearForm();
+  };
+
+  const tileClassName = ({ date }) => {
+    const formattedDate = date.toISOString().split('T')[0];
+    const dentistId = parseInt(formData.DentistId);
+    if (!dentistId) return null;
+
+    const entry = dentistAvailability.find(
+      entry => entry.DentistId === dentistId && entry.Date === formattedDate
+    );
+    const className = entry && entry.IsAvailable ? styles.available : (entry ? styles.unavailable : null);
+    console.log(`Tile ${formattedDate}:`, { dentistId, entry, className });
+    return className;
+  };
+
+  const tileDisabled = ({ date }) => {
+    const formattedDate = date.toISOString().split('T')[0];
+    const dentistId = parseInt(formData.DentistId);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (!dentistId || date < currentDate) {
+      console.log(`Tile ${formattedDate} disabled: No DentistId or past date`);
+      return true;
+    }
+
+    const entry = dentistAvailability.find(
+      entry => entry.DentistId === dentistId && entry.Date === formattedDate
+    );
+    const disabled = !entry || !entry.IsAvailable;
+    console.log(`Tile ${formattedDate} disabled:`, { dentistId, entry, disabled });
+    return disabled;
   };
 
   if (!isOpen) return null;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <h2>{appointment ? "Reschedule Appointment" : "Schedule Appointment"}</h2>
         <form onSubmit={submitForm}>
           <div className={styles.formGrid}>
@@ -218,21 +311,36 @@ const AppointmentModal = ({ isOpen, onClose, dentists, handleSubmit, userEmail, 
             </div>
             <div>
               <label htmlFor="AppointmentDate">Appointment Date:</label>
-              <input 
-                type="datetime-local" 
-                name="AppointmentDate" 
-                id="AppointmentDate" 
-                value={formData.AppointmentDate} 
-                onChange={handleChange} 
+              <input
+                type="text"
+                name="AppointmentDate"
+                id="AppointmentDate"
+                value={formData.AppointmentDate}
+                onClick={handleDateInputClick}
+                onChange={() => {}} // Prevent manual typing
                 className={styles.inputField}
-                required 
+                placeholder="Click to select a date"
+                readOnly
+                required
               />
+              {showCalendar && (
+                <div ref={calendarRef} className={styles.calendarContainer}>
+                  <Calendar
+                    onChange={handleDateSelect}
+                    value={formData.AppointmentDate ? new Date(formData.AppointmentDate) : null}
+                    tileClassName={tileClassName}
+                    tileDisabled={tileDisabled}
+                    minDate={new Date()}
+                    className={styles.calendar}
+                  />
+                </div>
+              )}
               {dateError && <p className={styles.error}>{dateError}</p>}
             </div>
           </div>
           <div className={styles.buttonContainer}>
-            <button onClick={onClose} className={styles.closeButton}>Close</button>
-            <button type="submit" className={styles.submitButton} disabled={!!dateError}>Submit</button> 
+            <button type="button" onClick={onClose} className={styles.actionButton}>Close</button>
+            <button type="submit" className={styles.actionButton} disabled={!!dateError}>Submit</button>
           </div>
         </form>
       </div>

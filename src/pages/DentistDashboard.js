@@ -6,6 +6,7 @@ import Sidebar from "../components/Sidebar";
 import DashboardContent from "./DashboardContent";
 import ConsultationsContent from "./ConsultationsContent";
 import ProfileContent from "./ProfileContent";
+import DentistCalendar from "./DentistCalendar"; // Import DentistCalendar
 
 const DentistDashboard = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const DentistDashboard = () => {
 
       const { data: dentistData, error: dentistError } = await supabase
         .from('Dentist')
-        .select('id, DentistName, ContactNo, Email, LicenseNo, Address, LicenseNoUrl') // Fetch all fields
+        .select('id, DentistName, ContactNo, Email, LicenseNo, Address, LicenseNoUrl')
         .eq('Email', session.user.email)
         .single();
 
@@ -45,7 +46,6 @@ const DentistDashboard = () => {
       const currentDentistId = dentistData.id;
       setDentistId(currentDentistId);
       setDentistData(dentistData);
-      // Update profile warning to check all required fields
       setProfileWarning(!dentistData.DentistName || !dentistData.ContactNo || !dentistData.LicenseNo || !dentistData.Address);
       console.log('Fetched Dentist Data:', dentistData);
     };
@@ -91,6 +91,10 @@ const DentistDashboard = () => {
           <Route 
             path="/profile" 
             element={<ProfileContent dentistId={dentistId} dentistData={dentistData} setDentistData={setDentistData} setProfileWarning={setProfileWarning} />}
+          />
+          <Route 
+            path="/calendar" 
+            element={<DentistCalendar />} // Add Calendar route
           />
         </Routes>
       </div>

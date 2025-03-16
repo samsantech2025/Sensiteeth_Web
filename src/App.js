@@ -5,12 +5,15 @@ import Signup from "./pages/Signup";
 import PatientDashboard from "./pages/PatientDashboard";
 import DentistDashboard from "./pages/DentistDashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
-
+import PatientLogin from "./pages/PatientLogin";
+import PatientSignUp from "./pages/PatientSignUp";
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/PatientLogin" element={<PatientLogin />} />
+        <Route path="/PatientSignUp" element={<PatientSignUp />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/patient-dashboard"

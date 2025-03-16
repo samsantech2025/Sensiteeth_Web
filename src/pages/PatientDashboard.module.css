@@ -203,7 +203,7 @@
   padding: 20px;
   border-radius: 12px;
   width: 90%;
-  max-width: 500px;
+  max-width: 800px; /* Adjusted to match AppointmentModal */
   max-height: 80vh; /* Limit height */
   overflow-y: auto; /* Scroll if needed */
   box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Enhanced teal shadow */
@@ -235,4 +235,77 @@
   gap: 10px;
   justify-content: flex-end;
   margin-top: 20px;
+}
+
+/* Form grid for AppointmentModal */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.formGrid > div.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGrid label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #00695c; /* Teal */
+}
+
+/* Input field styling */
+.inputField {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+  color: #212121; /* Black87 */
+  transition: border-color 0.2s ease-in-out;
+}
+
+.inputField:focus {
+  border-color: #00695c; /* Teal */
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 105, 92, 0.3); /* Subtle teal glow */
+}
+
+/* Calendar-specific styles */
+.calendar {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #e0e0e0; /* Light grey border */
+  border-radius: 8px;
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle gradient */
+  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.2); /* Teal shadow */
+}
+
+/* Available (green) and unavailable (red) tiles */
+.available {
+  background-color: #d4edda !important; /* Light green */
+  color: #155724 !important; /* Dark green text */
+}
+
+.unavailable {
+  background-color: #f8d7da !important; /* Light red */
+  color: #721c24 !important; /* Dark red text */
+}
+
+/* Error message */
+.error {
+  color: #721c24; /* Dark red */
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
+/* Button container for modal */
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
 }

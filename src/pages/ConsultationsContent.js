@@ -11,7 +11,6 @@ const DentistConsultations = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  // Supabase base URL
   const SUPABASE_STORAGE_URL = 'https://snvrykahnydcsdvfwfbw.supabase.co/storage/v1/object/public/';
 
   useEffect(() => {
@@ -111,7 +110,7 @@ const DentistConsultations = () => {
       console.log('Opening modal with Image URL:', diagnosis[0].ImageUrl);
       setIsModalOpen(true);
     } else {
-      alert("No diagnosis record found for this consultation.");
+      console.log("No diagnosis available to view/edit.");
     }
   };
 
@@ -119,7 +118,6 @@ const DentistConsultations = () => {
     if (!selectedDiagnosis) return;
 
     try {
-      // Update Diagnosis table
       const { data: diagnosisData, error: diagnosisError } = await supabase
         .from('Diagnosis')
         .update({
@@ -135,7 +133,6 @@ const DentistConsultations = () => {
       }
       console.log("Diagnosis updated successfully:", diagnosisData);
 
-      // If FinalDiagnosis is provided, update Consultation status to "complete"
       if (finalDiagnosis && finalDiagnosis.trim() !== '') {
         const consultationId = selectedDiagnosis.ConsultationId;
         const { data: consultationData, error: consultationError } = await supabase
@@ -213,12 +210,14 @@ const DentistConsultations = () => {
                       </button>
                     </>
                   )}
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => handleViewDiagnosis(appointment.Diagnosis)}
-                  >
-                    View/Edit Diagnosis
-                  </button>
+                  {appointment.Diagnosis && appointment.Diagnosis.length > 0 && (
+                    <button
+                      className={styles.actionButton}
+                      onClick={() => handleViewDiagnosis(appointment.Diagnosis)}
+                    >
+                      View/Edit Diagnosis
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -228,7 +227,6 @@ const DentistConsultations = () => {
         <p>No consultations scheduled yet.</p>
       )}
 
-      {/* Modal for Viewing/Editing Diagnosis */}
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>

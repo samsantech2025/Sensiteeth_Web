@@ -1,4 +1,3 @@
-// src/App.js
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -7,6 +6,7 @@ import DentistDashboard from "./pages/DentistDashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PatientLogin from "./pages/PatientLogin";
 import PatientSignUp from "./pages/PatientSignUp";
+
 const App = () => {
   return (
     <Router>

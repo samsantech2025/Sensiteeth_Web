@@ -29,8 +29,8 @@ const AppointmentModal = ({
 
   const [formData, setFormData] = useState(initialFormData);
   const [dateError, setDateError] = useState(null);
-  const [showCalendar, setShowCalendar] = useState(false); // Toggle calendar visibility
-  const calendarRef = useRef(null); // Ref to handle clicks outside calendar
+  const [showCalendar, setShowCalendar] = useState(false);
+  const calendarRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -55,7 +55,6 @@ const AppointmentModal = ({
     }
   }, [isOpen, userEmail, patientData, appointment, dentistAvailability]);
 
-  // Close calendar if clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
@@ -81,8 +80,17 @@ const AppointmentModal = ({
     setShowCalendar(true);
   };
 
+  const formatDateToPhilippines = (date) => {
+    // Create a new Date object adjusted to Philippine timezone (UTC+08:00)
+    const philippineDate = new Date(date);
+    const year = philippineDate.getFullYear();
+    const month = String(philippineDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(philippineDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleDateSelect = (date) => {
-    const formattedDate = date.toISOString().split('T')[0];
+    const formattedDate = formatDateToPhilippines(date);
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
@@ -108,7 +116,7 @@ const AppointmentModal = ({
       ...prevState,
       AppointmentDate: formattedDate
     }));
-    setShowCalendar(false); // Close calendar after selection
+    setShowCalendar(false);
     console.log('Selected Date:', formattedDate);
   };
 
@@ -142,7 +150,7 @@ const AppointmentModal = ({
   };
 
   const tileClassName = ({ date }) => {
-    const formattedDate = date.toISOString().split('T')[0];
+    const formattedDate = formatDateToPhilippines(date);
     const dentistId = parseInt(formData.DentistId);
     if (!dentistId) return null;
 
@@ -155,7 +163,7 @@ const AppointmentModal = ({
   };
 
   const tileDisabled = ({ date }) => {
-    const formattedDate = date.toISOString().split('T')[0];
+    const formattedDate = formatDateToPhilippines(date);
     const dentistId = parseInt(formData.DentistId);
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);

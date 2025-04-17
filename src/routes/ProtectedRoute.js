@@ -26,10 +26,11 @@ const ProtectedRoute = ({ children, role }) => {
 
       if (error) {
         console.error("Error fetching user profile:", error);
-      } else {
-        setUserRole(profile.role);
+        setLoading(false);
+        return;
       }
 
+      setUserRole(profile.role ? profile.role.toLowerCase() : null);
       setLoading(false);
     };
 
@@ -37,6 +38,7 @@ const ProtectedRoute = ({ children, role }) => {
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state changed:", event, session);
         if (!session) {
           setAuthenticated(false);
           setUserRole(null);
@@ -45,7 +47,7 @@ const ProtectedRoute = ({ children, role }) => {
     );
 
     return () => {
-      authListener.subscription.unsubscribe();
+      authListener.subscription?.unsubscribe();
     };
   }, []);
 
@@ -57,14 +59,21 @@ const ProtectedRoute = ({ children, role }) => {
     // Redirect based on the expected role
     if (role === "patient") {
       return <Navigate to="/PatientLogin" />;
-    } else if (role === "dentist") {
-      return <Navigate to="/" />; // Assuming a DentistLogin exists; adjust as needed
+    } else if (role === "dentist" || role === "secretary") {
+      return <Navigate to="/" />;
     }
     return <Navigate to="/" />; // Fallback for unknown roles
   }
 
-  if (userRole !== role) {
-    // Redirect to home if role mismatch
+  // Allow both dentist and secretary to access dentist routes
+  if (role === "dentist") {
+    if (userRole !== "dentist" && userRole !== "secretary") {
+      console.log(`Role mismatch: expected dentist or secretary, got ${userRole}`);
+      return <Navigate to="/" />;
+    }
+  } else if (userRole !== role) {
+    // For other roles (e.g., patient), strict match
+    console.log(`Role mismatch: expected ${role}, got ${userRole}`);
     return <Navigate to="/" />;
   }
 

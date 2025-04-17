@@ -15,37 +15,58 @@ const Login = () => {
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    // Attempt authentication
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    setLoading(false);
-
-    if (error) {
-      setError(error.message);
+    if (authError) {
+      setLoading(false);
+      setError(authError.message);
+      console.error("Authentication error:", authError.message);
       return;
     }
 
+    // Check email confirmation
+    if (!authData.user.confirmed_at) {
+      setLoading(false);
+      setError("Please confirm your email before logging in.");
+      console.error("User email not confirmed:", email);
+      return;
+    }
+
+    // Query Users table for role
     const { data: userData, error: userError } = await supabase
       .from("Users")
       .select("role")
       .eq("email", email)
       .single();
 
-    if (userError) {
-      setError(userError.message);
+    setLoading(false);
+
+    if (userError || !userData) {
+      setError("User role not found. Please contact support.");
+      console.error("Users table error:", userError?.message, "Email:", email);
       return;
     }
 
-    const role = userData.role;
+    const role = userData.role ? userData.role.trim().toLowerCase() : null;
+    console.log("User role fetched:", role);
 
+    // Debug navigation
     if (role === "patient") {
+      console.log("Navigating to /patient-dashboard");
       navigate("/patient-dashboard");
     } else if (role === "dentist") {
+      console.log("Navigating to /dentist-dashboard");
+      navigate("/dentist-dashboard");
+    } else if (role === "secretary") {
+      console.log("Navigating to /dentist-dashboard for secretary");
       navigate("/dentist-dashboard");
     } else {
       setError("User role not recognized.");
+      console.error("Unrecognized role:", role);
     }
   };
 

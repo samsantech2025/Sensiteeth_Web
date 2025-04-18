@@ -13,7 +13,7 @@ const PatientDashboard = () => {
   const [isDiagnosisModalOpen, setIsDiagnosisModalOpen] = useState(false);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
   const [dentists, setDentists] = useState([]);
-  const [dentistAvailability, setDentistAvailability] = useState([]); // New state
+  const [dentistAvailability, setDentistAvailability] = useState([]);
   const [patientId, setPatientId] = useState(null);
   const [email, setEmail] = useState('');
   const [patientData, setPatientData] = useState(null);
@@ -52,30 +52,37 @@ const PatientDashboard = () => {
       setPatientData(patientData);
       console.log('Fetched Patient Data:', patientData);
 
-      const { data: activeConsultationData, error: activeConsultationError } = await supabase
-        .from('Consultation')
-        .select('*, Dentist(DentistName)')
-        .eq('PatientId', currentPatientId)
-        .neq('Status', 'complete');
-
-      if (activeConsultationError) {
-        console.error("Error fetching active consultations:", activeConsultationError);
-      } else {
-        setAppointments(activeConsultationData);
-        console.log('Fetched Active Appointments:', activeConsultationData);
-      }
-
-      const { data: completedConsultationData, error: completedConsultationError } = await supabase
+      // Fetch all consultations for the patient to determine new/returning status
+      const { data: allConsultations, error: allConsultationsError } = await supabase
         .from('Consultation')
         .select('*, Dentist(DentistName), Diagnosis(*)')
         .eq('PatientId', currentPatientId)
-        .eq('Status', 'complete');
+        .order('AppointmentDate', { ascending: true });
 
-      if (completedConsultationError) {
-        console.error("Error fetching completed consultations:", completedConsultationError);
+      if (allConsultationsError) {
+        console.error("Error fetching all consultations:", allConsultationsError);
       } else {
-        setCompletedConsultations(completedConsultationData);
-        console.log('Fetched Completed Consultations:', completedConsultationData);
+        // Add patientStatus to each consultation
+        const consultationsWithStatus = allConsultations.map((consultation, index, arr) => {
+          const priorConsultations = arr.slice(0, index).filter(
+            (c) => c.PatientId === consultation.PatientId
+          );
+          const patientStatus = priorConsultations.length === 0 ? "new" : "returning";
+          return { ...consultation, patientStatus };
+        });
+
+        // Filter into active and completed consultations
+        const activeConsultations = consultationsWithStatus.filter(
+          (consultation) => consultation.Status !== 'complete'
+        );
+        const completedConsultations = consultationsWithStatus.filter(
+          (consultation) => consultation.Status === 'complete'
+        );
+
+        setAppointments(activeConsultations);
+        console.log('Fetched Active Appointments:', activeConsultations);
+        setCompletedConsultations(completedConsultations);
+        console.log('Fetched Completed Consultations:', completedConsultations);
       }
 
       const { data: historyData, error: historyError } = await supabase
@@ -98,11 +105,10 @@ const PatientDashboard = () => {
         console.log('Fetched Dentists:', dentistsData);
       }
 
-      // Fetch DentistAvailability for all dentists
       const { data: availabilityData, error: availabilityError } = await supabase
         .from('DentistAvailability')
         .select('DentistId, Date, IsAvailable')
-        .gte('Date', new Date().toISOString().split('T')[0]); // Future dates only
+        .gte('Date', new Date().toISOString().split('T')[0]);
 
       if (availabilityError) {
         console.error("Error fetching dentist availability:", availabilityError);
@@ -253,25 +259,31 @@ const PatientDashboard = () => {
       }
 
       alert(selectedAppointment ? "Appointment rescheduled successfully!" : "Appointment scheduled successfully!");
-      const { data: activeAppointments, error: activeRefreshError } = await supabase
-        .from('Consultation')
-        .select('*, Dentist(DentistName)')
-        .eq('PatientId', patientIdToUse)
-        .neq('Status', 'complete');
-      if (activeRefreshError) {
-        console.error("Error refreshing active appointments:", activeRefreshError);
-      } else {
-        setAppointments(activeAppointments);
-      }
-
-      const { data: completedAppointments, error: completedRefreshError } = await supabase
+      const { data: allConsultations, error: allConsultationsError } = await supabase
         .from('Consultation')
         .select('*, Dentist(DentistName), Diagnosis(*)')
         .eq('PatientId', patientIdToUse)
-        .eq('Status', 'complete');
-      if (completedRefreshError) {
-        console.error("Error refreshing completed appointments:", completedRefreshError);
+        .order('AppointmentDate', { ascending: true });
+
+      if (allConsultationsError) {
+        console.error("Error refreshing consultations:", allConsultationsError);
       } else {
+        const consultationsWithStatus = allConsultations.map((consultation, index, arr) => {
+          const priorConsultations = arr.slice(0, index).filter(
+            (c) => c.PatientId === consultation.PatientId
+          );
+          const patientStatus = priorConsultations.length === 0 ? "new" : "returning";
+          return { ...consultation, patientStatus };
+        });
+
+        const activeAppointments = consultationsWithStatus.filter(
+          (consultation) => consultation.Status !== 'complete'
+        );
+        const completedAppointments = consultationsWithStatus.filter(
+          (consultation) => consultation.Status === 'complete'
+        );
+
+        setAppointments(activeAppointments);
         setCompletedConsultations(completedAppointments);
       }
 
@@ -297,14 +309,26 @@ const PatientDashboard = () => {
         }
 
         console.log("Appointment canceled successfully");
-        const { data: activeAppointments, error: activeRefreshError } = await supabase
+        const { data: allConsultations, error: allConsultationsError } = await supabase
           .from('Consultation')
-          .select('*, Dentist(DentistName)')
+          .select('*, Dentist(DentistName), Diagnosis(*)')
           .eq('PatientId', patientId)
-          .neq('Status', 'complete');
-        if (activeRefreshError) {
-          console.error("Error refreshing active appointments:", activeRefreshError);
+          .order('AppointmentDate', { ascending: true });
+
+        if (allConsultationsError) {
+          console.error("Error refreshing consultations:", allConsultationsError);
         } else {
+          const consultationsWithStatus = allConsultations.map((consultation, index, arr) => {
+            const priorConsultations = arr.slice(0, index).filter(
+              (c) => c.PatientId === consultation.PatientId
+            );
+            const patientStatus = priorConsultations.length === 0 ? "new" : "returning";
+            return { ...consultation, patientStatus };
+          });
+
+          const activeAppointments = consultationsWithStatus.filter(
+            (consultation) => consultation.Status !== 'complete'
+          );
           setAppointments(activeAppointments);
         }
       } catch (error) {
@@ -345,6 +369,7 @@ const PatientDashboard = () => {
                 <div key={appointment.id} className={styles.card}>
                   <p><strong>Date:</strong> {new Date(appointment.AppointmentDate).toLocaleDateString()}</p>
                   <p><strong>Dentist:</strong> {appointment.Dentist.DentistName}</p>
+                  <p><strong>Patient Status:</strong> {appointment.patientStatus === "new" ? "New" : "Returning"}</p>
                   <p><strong>Status:</strong> {appointment.Status}</p>
                   <div>
                     <button 
@@ -383,6 +408,7 @@ const PatientDashboard = () => {
                 <div key={consultation.id} className={styles.card}>
                   <p><strong>Date:</strong> {new Date(consultation.AppointmentDate).toLocaleDateString()}</p>
                   <p><strong>Dentist:</strong> {consultation.Dentist.DentistName}</p>
+                  <p><strong>Patient Status:</strong> {consultation.patientStatus === "new" ? "New" : "Returning"}</p>
                   <p><strong>Status:</strong> Completed</p>
                   <button
                     className={styles.actionButton}
@@ -408,7 +434,7 @@ const PatientDashboard = () => {
         patientData={patientData}
         appointment={selectedAppointment}
         styles={styles}
-        dentistAvailability={dentistAvailability} // Pass availability to modal
+        dentistAvailability={dentistAvailability}
       />
 
       {isDiagnosisModalOpen && (

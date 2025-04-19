@@ -58,7 +58,7 @@ const AppointmentModal = ({
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setShowCalendar(false);
+        setShowCalendar(true);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);

@@ -56,7 +56,7 @@ const ConsultationsContent = ({ dentistId }) => {
 
         const { data: consultationData, error: consultationError } = await supabase
           .from("Consultation")
-          .select("*, patient(FirstName, LastName), Diagnosis(*)")
+          .select("*, Patient(FirstName, LastName), Diagnosis(*)")
           .eq("DentistId", dentistId)
           .order("AppointmentDate", { ascending: true });
 

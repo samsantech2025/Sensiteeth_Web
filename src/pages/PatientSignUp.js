@@ -103,7 +103,7 @@ const PatientSignUp = () => {
 
     setSuccess("Sign-up successful! Redirecting to login...");
     setLoading(false);
-    setTimeout(() => navigate("/patient-login"), 2000);
+    setTimeout(() => navigate("/PatientLogin"), 2000);
   };
 
   return (

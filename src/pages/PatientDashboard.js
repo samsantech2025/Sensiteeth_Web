@@ -11,7 +11,8 @@ const PatientDashboard = () => {
   const [patientHistory, setPatientHistory] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDiagnosisModalOpen, setIsDiagnosisModalOpen] = useState(false);
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
+  const [selectedDiagnoses, setSelectedDiagnoses] = useState([]);
+  const [currentDiagnosis, setCurrentDiagnosis] = useState(null);
   const [dentists, setDentists] = useState([]);
   const [dentistAvailability, setDentistAvailability] = useState([]);
   const [patientId, setPatientId] = useState(null);
@@ -19,6 +20,12 @@ const PatientDashboard = () => {
   const [patientData, setPatientData] = useState(null);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [imageError, setImageError] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [followUpNotifications, setFollowUpNotifications] = useState([]);
+  const [currentPageAppointments, setCurrentPageAppointments] = useState(1);
+  const [currentPageHistory, setCurrentPageHistory] = useState(1);
+  const appointmentsPerPage = 6;
+  const historyPerPage = 3;
 
   const SUPABASE_STORAGE_URL = 'https://snvrykahnydcsdvfwfbw.supabase.co/storage/v1/object/public/';
 
@@ -52,7 +59,6 @@ const PatientDashboard = () => {
       setPatientData(patientData);
       console.log('Fetched Patient Data:', patientData);
 
-      // Fetch all consultations for the patient to determine new/returning status
       const { data: allConsultations, error: allConsultationsError } = await supabase
         .from('Consultation')
         .select('*, Dentist(DentistName), Diagnosis(*)')
@@ -62,7 +68,6 @@ const PatientDashboard = () => {
       if (allConsultationsError) {
         console.error("Error fetching all consultations:", allConsultationsError);
       } else {
-        // Add patientStatus to each consultation
         const consultationsWithStatus = allConsultations.map((consultation, index, arr) => {
           const priorConsultations = arr.slice(0, index).filter(
             (c) => c.PatientId === consultation.PatientId
@@ -71,7 +76,6 @@ const PatientDashboard = () => {
           return { ...consultation, patientStatus };
         });
 
-        // Filter into active and completed consultations
         const activeConsultations = consultationsWithStatus.filter(
           (consultation) => consultation.Status !== 'complete'
         );
@@ -83,6 +87,27 @@ const PatientDashboard = () => {
         console.log('Fetched Active Appointments:', activeConsultations);
         setCompletedConsultations(completedConsultations);
         console.log('Fetched Completed Consultations:', completedConsultations);
+
+        const today = new Date();
+        const sevenDaysFromNow = new Date(today);
+        sevenDaysFromNow.setDate(today.getDate() + 7);
+        const notifications = consultationsWithStatus
+          .filter((consultation) => consultation.followupdate)
+          .map((consultation) => {
+            const followUpDate = new Date(consultation.followupdate);
+            if (followUpDate >= today && followUpDate <= sevenDaysFromNow) {
+              return {
+                consultationId: consultation.id,
+                followUpDate: followUpDate,
+                dentistName: consultation.Dentist.DentistName,
+              };
+            }
+            return null;
+          })
+          .filter((notification) => notification !== null);
+
+        setFollowUpNotifications(notifications);
+        console.log('Follow-Up Notifications:', notifications);
       }
 
       const { data: historyData, error: historyError } = await supabase
@@ -141,9 +166,15 @@ const PatientDashboard = () => {
     setSelectedAppointment(null);
   };
 
-  const openDiagnosisModal = (diagnosis) => {
-    if (diagnosis && diagnosis.length > 0) {
-      setSelectedDiagnosis(diagnosis[0]);
+  const openDiagnosisModal = (diagnoses) => {
+    if (diagnoses && diagnoses.length > 0) {
+      const sortedDiagnoses = diagnoses.sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
+        const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
+        return dateB - dateA || b.id - a.id;
+      });
+      setSelectedDiagnoses(sortedDiagnoses);
+      setCurrentDiagnosis(sortedDiagnoses[0]);
       setImageError(false);
       setIsDiagnosisModalOpen(true);
     } else {
@@ -153,7 +184,13 @@ const PatientDashboard = () => {
 
   const closeDiagnosisModal = () => {
     setIsDiagnosisModalOpen(false);
-    setSelectedDiagnosis(null);
+    setSelectedDiagnoses([]);
+    setCurrentDiagnosis(null);
+  };
+
+  const handleSelectDiagnosis = (diagnosis) => {
+    setCurrentDiagnosis(diagnosis);
+    setImageError(false);
   };
 
   const handleSubmit = async (formData) => {
@@ -285,6 +322,27 @@ const PatientDashboard = () => {
 
         setAppointments(activeAppointments);
         setCompletedConsultations(completedAppointments);
+        setCurrentPageAppointments(1); // Reset to first page after data refresh
+
+        const today = new Date();
+        const sevenDaysFromNow = new Date(today);
+        sevenDaysFromNow.setDate(today.getDate() + 7);
+        const notifications = consultationsWithStatus
+          .filter((consultation) => consultation.followupdate)
+          .map((consultation) => {
+            const followUpDate = new Date(consultation.followupdate);
+            if (followUpDate >= today && followUpDate <= sevenDaysFromNow) {
+              return {
+                consultationId: consultation.id,
+                followUpDate: followUpDate,
+                dentistName: consultation.Dentist.DentistName,
+              };
+            }
+            return null;
+          })
+          .filter((notification) => notification !== null);
+
+        setFollowUpNotifications(notifications);
       }
 
     } catch (error) {
@@ -330,6 +388,27 @@ const PatientDashboard = () => {
             (consultation) => consultation.Status !== 'complete'
           );
           setAppointments(activeAppointments);
+          setCurrentPageAppointments(1); // Reset to first page after data refresh
+
+          const today = new Date();
+          const sevenDaysFromNow = new Date(today);
+          sevenDaysFromNow.setDate(today.getDate() + 7);
+          const notifications = consultationsWithStatus
+            .filter((consultation) => consultation.followupdate)
+            .map((consultation) => {
+              const followUpDate = new Date(consultation.followupdate);
+              if (followUpDate >= today && followUpDate <= sevenDaysFromNow) {
+                return {
+                  consultationId: consultation.id,
+                  followUpDate: followUpDate,
+                  dentistName: consultation.Dentist.DentistName,
+                };
+              }
+              return null;
+            })
+            .filter((notification) => notification !== null);
+
+          setFollowUpNotifications(notifications);
         }
       } catch (error) {
         console.error('Cancel error:', error.message);
@@ -340,7 +419,7 @@ const PatientDashboard = () => {
 
   const handleImageError = () => {
     setImageError(true);
-    console.error('Image failed to load:', selectedDiagnosis?.ImageUrl);
+    console.error('Image failed to load:', currentDiagnosis?.ImageUrl);
   };
 
   const getFullImageUrl = (url) => {
@@ -348,6 +427,57 @@ const PatientDashboard = () => {
     if (url.startsWith('http')) return url;
     return `${SUPABASE_STORAGE_URL}${url}`;
   };
+
+  const filteredAppointments = statusFilter === "all"
+    ? appointments
+    : appointments.filter(
+        (appointment) => appointment.Status.toLowerCase() === statusFilter.toLowerCase()
+      );
+
+  // Pagination for Upcoming Appointments
+  const totalAppointments = filteredAppointments.length;
+  const totalPagesAppointments = Math.ceil(totalAppointments / appointmentsPerPage);
+  const startIndexAppointments = (currentPageAppointments - 1) * appointmentsPerPage;
+  const endIndexAppointments = startIndexAppointments + appointmentsPerPage;
+  const currentAppointments = filteredAppointments.slice(startIndexAppointments, endIndexAppointments);
+
+  const handlePageChangeAppointments = (page) => {
+    if (page >= 1 && page <= totalPagesAppointments) {
+      setCurrentPageAppointments(page);
+    }
+  };
+
+  // Combine and sort Dental History
+  const combinedHistory = [
+    ...patientHistory.map(history => ({
+      type: 'history',
+      date: new Date(history.date),
+      data: history,
+    })),
+    ...completedConsultations.map(consultation => ({
+      type: 'consultation',
+      date: new Date(consultation.AppointmentDate),
+      data: consultation,
+    })),
+  ].sort((a, b) => b.date - a.date);
+
+  // Pagination for Dental History
+  const totalHistory = combinedHistory.length;
+  const totalPagesHistory = Math.ceil(totalHistory / historyPerPage);
+  const startIndexHistory = (currentPageHistory - 1) * historyPerPage;
+  const endIndexHistory = startIndexHistory + historyPerPage;
+  const currentHistory = combinedHistory.slice(startIndexHistory, endIndexHistory);
+
+  const handlePageChangeHistory = (page) => {
+    if (page >= 1 && page <= totalPagesHistory) {
+      setCurrentPageHistory(page);
+    }
+  };
+
+  // Reset pagination when status filter changes
+  useEffect(() => {
+    setCurrentPageAppointments(1);
+  }, [statusFilter]);
 
   if (!patientId) {
     return <div>Loading patient data...</div>;
@@ -363,33 +493,94 @@ const PatientDashboard = () => {
       <div className={styles.content}>
         <section className={styles.section}>
           <h2 className={styles.subtitle}>Upcoming Appointments</h2>
-          {appointments.length > 0 ? (
-            <div className={styles.cardContainer}>
-              {appointments.map(appointment => (
-                <div key={appointment.id} className={styles.card}>
-                  <p><strong>Date:</strong> {new Date(appointment.AppointmentDate).toLocaleDateString()}</p>
-                  <p><strong>Dentist:</strong> {appointment.Dentist.DentistName}</p>
-                  <p><strong>Patient Status:</strong> {appointment.patientStatus === "new" ? "New" : "Returning"}</p>
-                  <p><strong>Status:</strong> {appointment.Status}</p>
-                  <div>
-                    <button 
-                      className={styles.actionButton} 
-                      onClick={() => openModal(appointment)}
-                    >
-                      Reschedule
-                    </button>
-                    <button 
-                      className={styles.actionButton} 
-                      onClick={() => handleCancel(appointment.id)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+          {followUpNotifications.length > 0 && (
+            <div style={{ backgroundColor: '#fffae6', padding: '15px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ffd700' }}>
+              <h3 style={{ margin: '0 0 10px 0', color: '#d4a017' }}>Follow-Up Reminder</h3>
+              {followUpNotifications.map((notification) => (
+                <p key={notification.consultationId} style={{ margin: '5px 0' }}>
+                  You have a follow-up appointment with {notification.dentistName} on{" "}
+                  {notification.followUpDate.toLocaleDateString()}.
+                </p>
               ))}
             </div>
+          )}
+          <div style={{ marginBottom: '20px' }}>
+            <label htmlFor="statusFilter" style={{ marginRight: '10px' }}>
+              Filter by Status:
+            </label>
+            <select
+              id="statusFilter"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ padding: '5px', borderRadius: '4px' }}
+            >
+              <option value="all">All</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="partially complete">Partially Complete</option>
+              <option value="rejected">Rejected</option>
+              <option value="follow-up">Follow-Up</option>
+            </select>
+          </div>
+          {filteredAppointments.length > 0 ? (
+            <>
+              <div className={styles.cardContainer}>
+                {currentAppointments.map(appointment => (
+                  <div key={appointment.id} className={styles.card}>
+                    <p><strong>Date:</strong> {new Date(appointment.AppointmentDate).toLocaleDateString()}</p>
+                    <p><strong>Dentist:</strong> {appointment.Dentist.DentistName}</p>
+                    <p><strong>Patient Status:</strong> {appointment.patientStatus === "new" ? "New" : "Returning"}</p>
+                    <p><strong>Status:</strong> {appointment.Status}</p>
+                    <div>
+                      <button 
+                        className={styles.actionButton} 
+                        onClick={() => openModal(appointment)}
+                      >
+                        Reschedule
+                      </button>
+                      <button 
+                        className={styles.actionButton} 
+                        onClick={() => handleCancel(appointment.id)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.paginationContainer}>
+                <button
+                  onClick={() => handlePageChangeAppointments(currentPageAppointments - 1)}
+                  disabled={currentPageAppointments === 1}
+                  className={styles.paginationButton}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPagesAppointments }, (_, index) => index + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChangeAppointments(page)}
+                    className={`${styles.paginationButton} ${
+                      currentPageAppointments === page ? styles.paginationButtonActive : ""
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => handlePageChangeAppointments(currentPageAppointments + 1)}
+                  disabled={currentPageAppointments === totalPagesAppointments}
+                  className={styles.paginationButton}
+                >
+                  Next
+                </button>
+              </div>
+              <div className={styles.paginationInfo}>
+                Showing {startIndexAppointments + 1} to {Math.min(endIndexAppointments, totalAppointments)} of {totalAppointments} appointments
+              </div>
+            </>
           ) : (
-            <p className={styles.noData}>No upcoming appointments scheduled yet.</p>
+            <p className={styles.noData}>No upcoming appointments match the selected status.</p>
           )}
           <button className={styles.button} onClick={() => openModal()}>Schedule New Appointment</button>
         </section>
@@ -397,28 +588,63 @@ const PatientDashboard = () => {
         <section className={styles.section}>
           <h2 className={styles.subtitle}>Dental History</h2>
           {(patientHistory.length > 0 || completedConsultations.length > 0) ? (
-            <div className={styles.cardContainer}>
-              {patientHistory.map(history => (
-                <div key={history.id} className={styles.card}>
-                  <p><strong>Date:</strong> {history.date}</p>
-                  <p><strong>Note:</strong> {history.note}</p>
-                </div>
-              ))}
-              {completedConsultations.map(consultation => (
-                <div key={consultation.id} className={styles.card}>
-                  <p><strong>Date:</strong> {new Date(consultation.AppointmentDate).toLocaleDateString()}</p>
-                  <p><strong>Dentist:</strong> {consultation.Dentist.DentistName}</p>
-                  <p><strong>Patient Status:</strong> {consultation.patientStatus === "new" ? "New" : "Returning"}</p>
-                  <p><strong>Status:</strong> Completed</p>
+            <>
+              <div className={styles.cardContainer}>
+                {currentHistory.map((entry, index) => (
+                  <div key={`${entry.type}-${entry.data.id}`} className={styles.card}>
+                    {entry.type === 'history' ? (
+                      <>
+                        <p><strong>Date:</strong> {entry.data.date}</p>
+                        <p><strong>Note:</strong> {entry.data.note}</p>
+                      </>
+                    ) : (
+                      <>
+                        <p><strong>Date:</strong> {new Date(entry.data.AppointmentDate).toLocaleDateString()}</p>
+                        <p><strong>Dentist:</strong> {entry.data.Dentist.DentistName}</p>
+                        <p><strong>Patient Status:</strong> {entry.data.patientStatus === "new" ? "New" : "Returning"}</p>
+                        <p><strong>Status:</strong> Completed</p>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => openDiagnosisModal(entry.data.Diagnosis)}
+                        >
+                          View Diagnosis
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className={styles.paginationContainer}>
+                <button
+                  onClick={() => handlePageChangeHistory(currentPageHistory - 1)}
+                  disabled={currentPageHistory === 1}
+                  className={styles.paginationButton}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPagesHistory }, (_, index) => index + 1).map((page) => (
                   <button
-                    className={styles.actionButton}
-                    onClick={() => openDiagnosisModal(consultation.Diagnosis)}
+                    key={page}
+                    onClick={() => handlePageChangeHistory(page)}
+                    className={`${styles.paginationButton} ${
+                      currentPageHistory === page ? styles.paginationButtonActive : ""
+                    }`}
                   >
-                    View Diagnosis
+                    {page}
                   </button>
-                </div>
-              ))}
-            </div>
+                ))}
+                <button
+                  onClick={() => handlePageChangeHistory(currentPageHistory + 1)}
+                  disabled={currentPageHistory === totalPagesHistory}
+                  className={styles.paginationButton}
+                >
+                  Next
+                </button>
+              </div>
+              <div className={styles.paginationInfo}>
+                Showing {startIndexHistory + 1} to {Math.min(endIndexHistory, totalHistory)} of {totalHistory} history entries
+              </div>
+            </>
           ) : (
             <p className={styles.noData}>No dental history available yet.</p>
           )}
@@ -439,28 +665,53 @@ const PatientDashboard = () => {
 
       {isDiagnosisModalOpen && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Diagnosis Details</h3>
-            {selectedDiagnosis && (
+          <div className={styles.modal} style={{ maxHeight: "90vh", overflowY: "auto" }}>
+            <h3>Diagnosis History</h3>
+            {selectedDiagnoses && selectedDiagnoses.length > 0 ? (
               <>
-                <p><strong>Initial Diagnosis:</strong> {selectedDiagnosis.InitialDiagnosis}</p>
-                <p><strong>Image:</strong></p>
-                {imageError ? (
-                  <p style={{ color: 'red' }}>
-                    Unable to load image. URL: {getFullImageUrl(selectedDiagnosis.ImageUrl)}
-                  </p>
-                ) : (
-                  <img
-                    src={getFullImageUrl(selectedDiagnosis.ImageUrl)}
-                    alt="Diagnosis"
-                    style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
-                    onError={handleImageError}
-                    onLoad={() => console.log('Image loaded successfully')}
-                  />
+                <div style={{ marginBottom: "20px" }}>
+                  <label>
+                    <strong>Select Diagnosis Record:</strong>
+                    <select
+                      value={currentDiagnosis?.id || ""}
+                      onChange={(e) => {
+                        const selected = selectedDiagnoses.find(d => d.id === parseInt(e.target.value));
+                        handleSelectDiagnosis(selected);
+                      }}
+                      style={{ marginLeft: "10px", padding: "5px", width: "100%", maxWidth: "400px" }}
+                    >
+                      {selectedDiagnoses.map((diagnosis) => (
+                        <option key={diagnosis.id} value={diagnosis.id}>
+                          {`Diagnosis #${diagnosis.id} - ${diagnosis.InitialDiagnosis || "No Initial Diagnosis"}`}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                {currentDiagnosis && (
+                  <>
+                    <p><strong>Diagnosis ID:</strong> {currentDiagnosis.id}</p>
+                    <p><strong>Initial Diagnosis:</strong> {currentDiagnosis.InitialDiagnosis || "Not provided"}</p>
+                    <p><strong>Image:</strong></p>
+                    {imageError ? (
+                      <p style={{ color: 'red' }}>
+                        Unable to load image. URL: {getFullImageUrl(currentDiagnosis.ImageUrl)}
+                      </p>
+                    ) : (
+                      <img
+                        src={getFullImageUrl(currentDiagnosis.ImageUrl)}
+                        alt="Diagnosis"
+                        style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+                        onError={handleImageError}
+                        onLoad={() => console.log('Image loaded successfully')}
+                      />
+                    )}
+                    <p><strong>Confidence:</strong> {(currentDiagnosis.Confidence * 100).toFixed(2)}%</p>
+                    <p><strong>Final Diagnosis:</strong> {currentDiagnosis.FinalDiagnosis || 'Not provided'}</p>
+                    <p><strong>Final Diagnosis Description:</strong> {currentDiagnosis.FinalDiagnosisDesc || 'Not provided'}</p>
+                  </>
                 )}
-                <p><strong>Confidence:</strong> {(selectedDiagnosis.Confidence * 100).toFixed(2)}%</p>
-                <p><strong>Final Diagnosis:</strong> {selectedDiagnosis.FinalDiagnosis || 'Not provided'}</p>
-                <p><strong>Final Diagnosis Description:</strong> {selectedDiagnosis.FinalDiagnosisDesc || 'Not provided'}</p>
                 <div className={styles.modalButtons}>
                   <button
                     className={styles.actionButton}
@@ -470,6 +721,8 @@ const PatientDashboard = () => {
                   </button>
                 </div>
               </>
+            ) : (
+              <p>No diagnoses available.</p>
             )}
           </div>
         </div>

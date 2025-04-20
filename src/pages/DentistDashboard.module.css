@@ -497,3 +497,102 @@
   color: #666;
   text-align: right; /* Align text to the right to match pagination */
 }
+
+/*DASHBOARD CHARTS*/
+.chartContainer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chartContainer h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  height: 250px; /* Adjust as needed */
+  padding-left: 40px; /* Space for y-axis labels */
+  padding-bottom: 40px; /* Space for x-axis labels */
+}
+
+.yAxis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 200px; /* Matches maxHeight in JS */
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #ccc;
+}
+
+.yAxisLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.yAxisLabel {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.barsContainer {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 200px; /* Matches maxHeight in JS */
+  border-bottom: 1px solid #ccc;
+}
+
+.barWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  max-width: 40px; /* Adjust bar width */
+}
+
+.bar {
+  width: 20px; /* Bar width */
+  background-color: #4A90E2;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.3s ease;
+  position: relative;
+}
+
+.bar:hover {
+  background-color: #357ABD;
+}
+
+.barLabel {
+  position: absolute;
+  top: -20px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.xAxisLabel {
+  position: absolute;
+  bottom: -30px;
+  font-size: 0.8rem;
+  color: #666;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  white-space: nowrap;
+}

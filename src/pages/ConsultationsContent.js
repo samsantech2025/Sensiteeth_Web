@@ -5,7 +5,8 @@ import styles from "./DentistDashboard.module.css";
 const ConsultationsContent = ({ dentistId }) => {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
+  const [selectedDiagnoses, setSelectedDiagnoses] = useState([]);
+  const [currentDiagnosis, setCurrentDiagnosis] = useState(null);
   const [finalDiagnosis, setFinalDiagnosis] = useState("");
   const [finalDiagnosisDesc, setFinalDiagnosisDesc] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -128,7 +129,7 @@ const ConsultationsContent = ({ dentistId }) => {
     try {
       const { data, error } = await supabase
         .from("Consultation")
-        .update({ Status: "rejected" })
+        .update({ Status: "rejected", followupdate: null })
         .eq("id", appointmentId)
         .select();
 
@@ -137,6 +138,27 @@ const ConsultationsContent = ({ dentistId }) => {
       await refreshAppointments();
     } catch (error) {
       console.error("Reject error:", error.message);
+      setError(`An error occurred: ${error.message}`);
+    }
+  };
+
+  const handleSetComplete = async (appointmentId) => {
+    if (!window.confirm("Are you sure you want to mark this consultation as complete?")) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("Consultation")
+        .update({ Status: "complete", followupdate: null })
+        .eq("id", appointmentId)
+        .select();
+
+      if (error) throw new Error(`Error setting consultation to complete: ${error.message}`);
+      console.log("Consultation set to complete successfully:", data);
+      await refreshAppointments();
+    } catch (error) {
+      console.error("Set complete error:", error.message);
       setError(`An error occurred: ${error.message}`);
     }
   };
@@ -162,56 +184,90 @@ const ConsultationsContent = ({ dentistId }) => {
     }
   };
 
-  const handleViewDiagnosis = (diagnosis) => {
-    if (diagnosis && diagnosis.length > 0) {
-      setSelectedDiagnosis(diagnosis[0]);
-      setFinalDiagnosis(diagnosis[0].FinalDiagnosis || "");
-      setFinalDiagnosisDesc(diagnosis[0].FinalDiagnosisDesc || "");
+  const handleViewDiagnosis = (diagnoses) => {
+    if (diagnoses && diagnoses.length > 0) {
+      const sortedDiagnoses = diagnoses.sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
+        const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
+        return dateB - dateA || b.id - a.id;
+      });
+      setSelectedDiagnoses(sortedDiagnoses);
+      setCurrentDiagnosis(sortedDiagnoses[0]);
+      setFinalDiagnosis(sortedDiagnoses[0].FinalDiagnosis || "");
+      setFinalDiagnosisDesc(sortedDiagnoses[0].FinalDiagnosisDesc || "");
       setImageError(false);
-      console.log("Opening modal with Image URL:", diagnosis[0].ImageUrl);
+      console.log("Opening modal with Diagnoses:", sortedDiagnoses);
       setIsModalOpen(true);
     } else {
       console.log("No diagnosis available to view/edit.");
     }
   };
 
+  const handleSelectDiagnosis = (diagnosis) => {
+    setCurrentDiagnosis(diagnosis);
+    setFinalDiagnosis(diagnosis.FinalDiagnosis || "");
+    setFinalDiagnosisDesc(diagnosis.FinalDiagnosisDesc || "");
+    setImageError(false);
+  };
+
   const handleUpdateDiagnosis = async () => {
-    if (!selectedDiagnosis) return;
+    if (!currentDiagnosis) return;
 
     try {
-      const { data: diagnosisData, error: diagnosisError } = await supabase
-        .from("Diagnosis")
-        .update({
-          FinalDiagnosis: finalDiagnosis,
-          FinalDiagnosisDesc: finalDiagnosisDesc,
-        })
-        .eq("id", selectedDiagnosis.id)
-        .select();
+      const consultationId = currentDiagnosis.ConsultationId;
+      const { data: consultationData, error: consultationError } = await supabase
+        .from("Consultation")
+        .select("Status")
+        .eq("id", consultationId)
+        .single();
 
-      if (diagnosisError) {
-        console.error("Update diagnosis error:", diagnosisError);
-        throw new Error(`Error updating diagnosis: ${diagnosisError.message}`);
+      if (consultationError) {
+        console.error("Error fetching consultation status:", consultationError);
+        throw new Error(`Error fetching consultation status: ${consultationError.message}`);
       }
-      console.log("Diagnosis updated successfully:", diagnosisData);
 
-      if (finalDiagnosis && finalDiagnosis.trim() !== "") {
-        const consultationId = selectedDiagnosis.ConsultationId;
-        const { data: consultationData, error: consultationError } = await supabase
-          .from("Consultation")
-          .update({ Status: "complete" })
-          .eq("id", consultationId)
+      const statusLower = consultationData.Status.toLowerCase();
+
+      if (statusLower === "follow-up") {
+        const { data: newDiagnosisData, error: newDiagnosisError } = await supabase
+          .from("Diagnosis")
+          .insert({
+            ConsultationId: consultationId,
+            InitialDiagnosis: currentDiagnosis.InitialDiagnosis,
+            Confidence: currentDiagnosis.Confidence,
+            FinalDiagnosis: finalDiagnosis,
+            FinalDiagnosisDesc: finalDiagnosisDesc,
+            ImageUrl: currentDiagnosis.ImageUrl,
+            AffectedTooth: currentDiagnosis.AffectedTooth,
+          })
           .select();
 
-        if (consultationError) {
-          console.error("Update consultation status error:", consultationError);
-          throw new Error(`Error updating consultation status: ${consultationError.message}`);
+        if (newDiagnosisError) {
+          console.error("Insert new diagnosis error:", newDiagnosisError);
+          throw new Error(`Error creating new diagnosis: ${newDiagnosisError.message}`);
         }
-        console.log("Consultation status updated to 'complete':", consultationData);
+        console.log("New follow-up diagnosis created successfully:", newDiagnosisData);
+      } else {
+        const { data: diagnosisData, error: diagnosisError } = await supabase
+          .from("Diagnosis")
+          .update({
+            FinalDiagnosis: finalDiagnosis,
+            FinalDiagnosisDesc: finalDiagnosisDesc,
+          })
+          .eq("id", currentDiagnosis.id)
+          .select();
+
+        if (diagnosisError) {
+          console.error("Update diagnosis error:", diagnosisError);
+          throw new Error(`Error updating diagnosis: ${diagnosisError.message}`);
+        }
+        console.log("Diagnosis updated successfully:", diagnosisData);
       }
 
       await refreshAppointments();
       setIsModalOpen(false);
-      setSelectedDiagnosis(null);
+      setSelectedDiagnoses([]);
+      setCurrentDiagnosis(null);
       setFinalDiagnosis("");
       setFinalDiagnosisDesc("");
     } catch (error) {
@@ -232,12 +288,15 @@ const ConsultationsContent = ({ dentistId }) => {
     try {
       const { data, error } = await supabase
         .from("Consultation")
-        .update({ followupdate: followUpDate ? new Date(followUpDate).toISOString() : null })
+        .update({
+          followupdate: followUpDate ? new Date(followUpDate).toISOString() : null,
+          Status: "follow-up",
+        })
         .eq("id", selectedConsultation.id)
         .select();
 
       if (error) throw new Error(`Error setting follow-up date: ${error.message}`);
-      console.log("Follow-up date updated successfully:", data);
+      console.log("Follow-up date and status updated successfully:", data);
       await refreshAppointments();
       setFollowUpModalOpen(false);
       setSelectedConsultation(null);
@@ -250,7 +309,7 @@ const ConsultationsContent = ({ dentistId }) => {
 
   const handleImageError = () => {
     setImageError(true);
-    console.error("Image failed to load:", selectedDiagnosis?.ImageUrl);
+    console.error("Image failed to load:", currentDiagnosis?.ImageUrl);
   };
 
   const getFullImageUrl = (url) => {
@@ -297,6 +356,7 @@ const ConsultationsContent = ({ dentistId }) => {
             <option value="rejected">Rejected</option>
             <option value="partially complete">Partially Complete</option>
             <option value="complete">Complete</option>
+            <option value="follow-up">Follow-Up</option>
           </select>
         </div>
         <div className={styles.searchGroup}>
@@ -324,54 +384,71 @@ const ConsultationsContent = ({ dentistId }) => {
               </tr>
             </thead>
             <tbody>
-              {currentRecords.map((appointment) => (
-                <tr key={appointment.id}>
-                  <td>{new Date(appointment.AppointmentDate).toLocaleDateString()}</td>
-                  <td>{`${appointment.Patient.FirstName} ${appointment.Patient.LastName}`}</td>
-                  <td>{appointment.Status}</td>
-                  <td>
-                    {appointment.followupdate
-                      ? new Date(appointment.followupdate).toLocaleDateString()
-                      : "Not set"}
-                  </td>
-                  <td>
-                    {(userRole === "dentist" || userRole === "secretary") &&
-                      appointment.Status === "pending" && (
-                        <>
+              {currentRecords.map((appointment) => {
+                const statusLower = appointment.Status.toLowerCase();
+                const canViewDiagnosis = ["partially complete", "complete", "follow-up"].includes(statusLower);
+                const canSetComplete = statusLower === "follow-up" || statusLower === "partially complete";
+                return (
+                  <tr key={appointment.id}>
+                    <td>{new Date(appointment.AppointmentDate).toLocaleDateString()}</td>
+                    <td>{`${appointment.Patient.FirstName} ${appointment.Patient.LastName}`}</td>
+                    <td>{appointment.Status}</td>
+                    <td>
+                      {appointment.followupdate
+                        ? new Date(appointment.followupdate).toLocaleDateString()
+                        : "Not set"}
+                    </td>
+                    <td>
+                      {(userRole === "dentist" || userRole === "secretary") &&
+                        appointment.Status === "pending" && (
+                          <>
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleApprove(appointment.id)}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleReject(appointment.id)}
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      {(userRole === "dentist" || userRole === "secretary") &&
+                        appointment.Diagnosis &&
+                        appointment.Diagnosis.length > 0 &&
+                        canViewDiagnosis && (
                           <button
                             className={styles.actionButton}
-                            onClick={() => handleApprove(appointment.id)}
+                            onClick={() => handleViewDiagnosis(appointment.Diagnosis)}
                           >
-                            Approve
+                            View/Edit Diagnosis
                           </button>
+                        )}
+                      {(userRole === "dentist" || userRole === "secretary") &&
+                        appointment.Status === "partially complete" && (
                           <button
                             className={styles.actionButton}
-                            onClick={() => handleReject(appointment.id)}
+                            onClick={() => handleSetFollowUp(appointment)}
                           >
-                            Reject
+                            Set Follow-Up
                           </button>
-                        </>
-                      )}
-                    {userRole === "dentist" && appointment.Diagnosis && appointment.Diagnosis.length > 0 && (
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => handleViewDiagnosis(appointment.Diagnosis)}
-                      >
-                        View/Edit Diagnosis
-                      </button>
-                    )}
-                    {(userRole === "dentist" || userRole === "secretary") &&
-                      appointment.Status === "complete" && (
-                        <button
-                          className={styles.actionButton}
-                          onClick={() => handleSetFollowUp(appointment)}
-                        >
-                          Set Follow-Up
-                        </button>
-                      )}
-                  </td>
-                </tr>
-              ))}
+                        )}
+                      {(userRole === "dentist" || userRole === "secretary") &&
+                        canSetComplete && (
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => handleSetComplete(appointment.id)}
+                          >
+                            Set to Complete
+                          </button>
+                        )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           <div className={styles.paginationContainer}>
@@ -411,53 +488,85 @@ const ConsultationsContent = ({ dentistId }) => {
 
       {isModalOpen && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Diagnosis Details</h3>
-            {selectedDiagnosis && (
+          <div className={styles.modal} style={{ maxHeight: "90vh", overflowY: "auto" }}>
+            <h3>Diagnosis History</h3>
+            {selectedDiagnoses && selectedDiagnoses.length > 0 ? (
               <>
-                <div className={styles.modalcont}>
-                  <div className={styles.txtfieldcont}>
-                    <p>
-                      <strong>Initial Diagnosis:</strong> {selectedDiagnosis.InitialDiagnosis}
-                    </p>
-                    <p>
-                      <strong>Confidence:</strong>{" "}
-                      {(selectedDiagnosis.Confidence * 100).toFixed(2)}%
-                    </p>
-                    <label>
-                      Final Diagnosis:
-                      <input
-                        type="text"
-                        value={finalDiagnosis}
-                        onChange={(e) => setFinalDiagnosis(e.target.value)}
-                        className={styles.inputField}
-                      />
-                    </label>
-                    <label>
-                      Final Diagnosis Description:
-                      <textarea
-                        value={finalDiagnosisDesc}
-                        onChange={(e) => setFinalDiagnosisDesc(e.target.value)}
-                        className={styles.textareaField}
-                      />
-                    </label>
-                  </div>
-                  <div className={styles.imgcont}>
-                    {imageError ? (
-                      <p style={{ color: "red" }}>
-                        Unable to load image. URL: {getFullImageUrl(selectedDiagnosis.ImageUrl)}
-                      </p>
-                    ) : (
-                      <img
-                        src={getFullImageUrl(selectedDiagnosis.ImageUrl)}
-                        alt="Diagnosis"
-                        style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
-                        onError={handleImageError}
-                        onLoad={() => console.log("Image loaded successfully")}
-                      />
-                    )}
-                  </div>
+                <div style={{ marginBottom: "20px" }}>
+                  <label>
+                    <strong>Select Diagnosis Record:</strong>
+                    <select
+                      value={currentDiagnosis?.id || ""}
+                      onChange={(e) => {
+                        const selected = selectedDiagnoses.find(d => d.id === parseInt(e.target.value));
+                        handleSelectDiagnosis(selected);
+                      }}
+                      style={{ marginLeft: "10px", padding: "5px", width: "100%", maxWidth: "400px" }}
+                    >
+                      {selectedDiagnoses.map((diagnosis) => (
+                        <option key={diagnosis.id} value={diagnosis.id}>
+                          {`Diagnosis #${diagnosis.id} - ${diagnosis.InitialDiagnosis || "No Diagnosis"}`}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
+
+                {currentDiagnosis && (
+                  <div className={styles.modalcont}>
+                    <div className={styles.txtfieldcont}>
+                      <p>
+                        <strong>Diagnosis ID:</strong>{" "}
+                        {currentDiagnosis.id}
+                      </p>
+                      <p>
+                        <strong>Diagnosis:</strong>{" "}
+                        {currentDiagnosis.InitialDiagnosis || "Not specified"}
+                      </p>
+                      <p>
+                        <strong>Affected Tooth:</strong>{" "}
+                        {currentDiagnosis.AffectedTooth || "Not specified"}
+                      </p>
+                      <p>
+                        <strong>Confidence:</strong>{" "}
+                        {(currentDiagnosis.Confidence * 100).toFixed(2)}%
+                      </p>
+                      <label>
+                        Additional Diagnosis (optional):
+                        <input
+                          type="text"
+                          value={finalDiagnosis}
+                          onChange={(e) => setFinalDiagnosis(e.target.value)}
+                          className={styles.inputField}
+                        />
+                      </label>
+                      <label>
+                        Additional Diagnosis Description (optional):
+                        <textarea
+                          value={finalDiagnosisDesc}
+                          onChange={(e) => setFinalDiagnosisDesc(e.target.value)}
+                          className={styles.textareaField}
+                        />
+                      </label>
+                    </div>
+                    <div className={styles.imgcont}>
+                      {imageError ? (
+                        <p style={{ color: "red" }}>
+                          Unable to load image. URL: {getFullImageUrl(currentDiagnosis.ImageUrl)}
+                        </p>
+                      ) : (
+                        <img
+                          src={getFullImageUrl(currentDiagnosis.ImageUrl)}
+                          alt="Diagnosis"
+                          style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+                          onError={handleImageError}
+                          onLoad={() => console.log("Image loaded successfully")}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className={styles.modalButtons}>
                   <button
                     className={styles.actionButton}
@@ -467,12 +576,18 @@ const ConsultationsContent = ({ dentistId }) => {
                   </button>
                   <button
                     className={styles.actionButton}
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      setSelectedDiagnoses([]);
+                      setCurrentDiagnosis(null);
+                    }}
                   >
                     Close
                   </button>
                 </div>
               </>
+            ) : (
+              <p>No diagnoses available.</p>
             )}
           </div>
         </div>

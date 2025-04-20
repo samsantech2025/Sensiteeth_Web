@@ -20,6 +20,11 @@ const ConsultationsContent = ({ dentistId }) => {
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [followUpDate, setFollowUpDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [appointmentToReject, setAppointmentToReject] = useState(null);
+  const [viewReasonModalOpen, setViewReasonModalOpen] = useState(false);
+  const [reasonToView, setReasonToView] = useState("");
   const recordsPerPage = 10;
 
   const SUPABASE_STORAGE_URL = "https://snvrykahnydcsdvfwfbw.supabase.co/storage/v1/object/public/";
@@ -125,17 +130,35 @@ const ConsultationsContent = ({ dentistId }) => {
     }
   };
 
-  const handleReject = async (appointmentId) => {
+  const openRejectModal = (appointmentId) => {
+    setAppointmentToReject(appointmentId);
+    setRejectionReason("");
+    setRejectModalOpen(true);
+  };
+
+  const handleReject = async () => {
+    if (!appointmentToReject || !rejectionReason.trim()) {
+      setError("Please provide a reason for rejection.");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("Consultation")
-        .update({ Status: "rejected", followupdate: null })
-        .eq("id", appointmentId)
+        .update({
+          Status: "rejected",
+          followupdate: null,
+          rejection_reason: rejectionReason.trim(),
+        })
+        .eq("id", appointmentToReject)
         .select();
 
       if (error) throw new Error(`Error rejecting consultation: ${error.message}`);
       console.log("Consultation rejected successfully:", data);
       await refreshAppointments();
+      setRejectModalOpen(false);
+      setAppointmentToReject(null);
+      setRejectionReason("");
     } catch (error) {
       console.error("Reject error:", error.message);
       setError(`An error occurred: ${error.message}`);
@@ -214,55 +237,20 @@ const ConsultationsContent = ({ dentistId }) => {
     if (!currentDiagnosis) return;
 
     try {
-      const consultationId = currentDiagnosis.ConsultationId;
-      const { data: consultationData, error: consultationError } = await supabase
-        .from("Consultation")
-        .select("Status")
-        .eq("id", consultationId)
-        .single();
+      const { data: diagnosisData, error: diagnosisError } = await supabase
+        .from("Diagnosis")
+        .update({
+          FinalDiagnosis: finalDiagnosis,
+          FinalDiagnosisDesc: finalDiagnosisDesc,
+        })
+        .eq("id", currentDiagnosis.id)
+        .select();
 
-      if (consultationError) {
-        console.error("Error fetching consultation status:", consultationError);
-        throw new Error(`Error fetching consultation status: ${consultationError.message}`);
+      if (diagnosisError) {
+        console.error("Update diagnosis error:", diagnosisError);
+        throw new Error(`Error updating diagnosis: ${diagnosisError.message}`);
       }
-
-      const statusLower = consultationData.Status.toLowerCase();
-
-      if (statusLower === "follow-up") {
-        const { data: newDiagnosisData, error: newDiagnosisError } = await supabase
-          .from("Diagnosis")
-          .insert({
-            ConsultationId: consultationId,
-            InitialDiagnosis: currentDiagnosis.InitialDiagnosis,
-            Confidence: currentDiagnosis.Confidence,
-            FinalDiagnosis: finalDiagnosis,
-            FinalDiagnosisDesc: finalDiagnosisDesc,
-            ImageUrl: currentDiagnosis.ImageUrl,
-            AffectedTooth: currentDiagnosis.AffectedTooth,
-          })
-          .select();
-
-        if (newDiagnosisError) {
-          console.error("Insert new diagnosis error:", newDiagnosisError);
-          throw new Error(`Error creating new diagnosis: ${newDiagnosisError.message}`);
-        }
-        console.log("New follow-up diagnosis created successfully:", newDiagnosisData);
-      } else {
-        const { data: diagnosisData, error: diagnosisError } = await supabase
-          .from("Diagnosis")
-          .update({
-            FinalDiagnosis: finalDiagnosis,
-            FinalDiagnosisDesc: finalDiagnosisDesc,
-          })
-          .eq("id", currentDiagnosis.id)
-          .select();
-
-        if (diagnosisError) {
-          console.error("Update diagnosis error:", diagnosisError);
-          throw new Error(`Error updating diagnosis: ${diagnosisError.message}`);
-        }
-        console.log("Diagnosis updated successfully:", diagnosisData);
-      }
+      console.log("Diagnosis updated successfully:", diagnosisData);
 
       await refreshAppointments();
       setIsModalOpen(false);
@@ -305,6 +293,11 @@ const ConsultationsContent = ({ dentistId }) => {
       console.error("Follow-up error:", error.message);
       setError(`An error occurred: ${error.message}`);
     }
+  };
+
+  const handleViewRejectionReason = (reason) => {
+    setReasonToView(reason || "No reason provided.");
+    setViewReasonModalOpen(true);
   };
 
   const handleImageError = () => {
@@ -410,7 +403,7 @@ const ConsultationsContent = ({ dentistId }) => {
                             </button>
                             <button
                               className={styles.actionButton}
-                              onClick={() => handleReject(appointment.id)}
+                              onClick={() => openRejectModal(appointment.id)}
                             >
                               Reject
                             </button>
@@ -443,6 +436,15 @@ const ConsultationsContent = ({ dentistId }) => {
                             onClick={() => handleSetComplete(appointment.id)}
                           >
                             Set to Complete
+                          </button>
+                        )}
+                      {(userRole === "dentist" || userRole === "secretary") &&
+                        appointment.Status === "rejected" && (
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => handleViewRejectionReason(appointment.rejection_reason)}
+                          >
+                            View Reason
                           </button>
                         )}
                     </td>
@@ -621,6 +623,67 @@ const ConsultationsContent = ({ dentistId }) => {
                 onClick={() => setFollowUpModalOpen(false)}
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {rejectModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Reject Consultation</h3>
+            <div className={styles.modalcont}>
+              <label>
+                Reason for Rejection (required):
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  className={styles.textareaField}
+                  placeholder="Please provide a reason for rejecting this consultation"
+                  required
+                />
+              </label>
+            </div>
+            <div className={styles.modalButtons}>
+              <button
+                className={styles.actionButton}
+                onClick={handleReject}
+                disabled={!rejectionReason.trim()}
+              >
+                Confirm Rejection
+              </button>
+              <button
+                className={styles.actionButton}
+                onClick={() => {
+                  setRejectModalOpen(false);
+                  setAppointmentToReject(null);
+                  setRejectionReason("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewReasonModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Rejection Reason</h3>
+            <div className={styles.modalcont}>
+              <p>{reasonToView}</p>
+            </div>
+            <div className={styles.modalButtons}>
+              <button
+                className={styles.actionButton}
+                onClick={() => {
+                  setViewReasonModalOpen(false);
+                  setReasonToView("");
+                }}
+              >
+                Close
               </button>
             </div>
           </div>

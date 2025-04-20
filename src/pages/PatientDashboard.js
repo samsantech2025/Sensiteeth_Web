@@ -24,6 +24,8 @@ const PatientDashboard = () => {
   const [followUpNotifications, setFollowUpNotifications] = useState([]);
   const [currentPageAppointments, setCurrentPageAppointments] = useState(1);
   const [currentPageHistory, setCurrentPageHistory] = useState(1);
+  const [viewReasonModalOpen, setViewReasonModalOpen] = useState(false);
+  const [reasonToView, setReasonToView] = useState("");
   const appointmentsPerPage = 6;
   const historyPerPage = 3;
 
@@ -151,7 +153,7 @@ const PatientDashboard = () => {
     if (error) {
       console.error("Error signing out:", error.message);
     } else {
-      console.log("Sign out successful, redirecting to /PatientLogin");
+        console.log("Sign out successful, redirecting to /PatientLogin");
       navigate("/PatientLogin");
     }
   };
@@ -417,6 +419,11 @@ const PatientDashboard = () => {
     }
   };
 
+  const handleViewRejectionReason = (reason) => {
+    setReasonToView(reason || "No reason provided.");
+    setViewReasonModalOpen(true);
+  };
+
   const handleImageError = () => {
     setImageError(true);
     console.error('Image failed to load:', currentDiagnosis?.ImageUrl);
@@ -525,28 +532,45 @@ const PatientDashboard = () => {
           {filteredAppointments.length > 0 ? (
             <>
               <div className={styles.cardContainer}>
-                {currentAppointments.map(appointment => (
-                  <div key={appointment.id} className={styles.card}>
-                    <p><strong>Date:</strong> {new Date(appointment.AppointmentDate).toLocaleDateString()}</p>
-                    <p><strong>Dentist:</strong> {appointment.Dentist.DentistName}</p>
-                    <p><strong>Patient Status:</strong> {appointment.patientStatus === "new" ? "New" : "Returning"}</p>
-                    <p><strong>Status:</strong> {appointment.Status}</p>
-                    <div>
-                      <button 
-                        className={styles.actionButton} 
-                        onClick={() => openModal(appointment)}
-                      >
-                        Reschedule
-                      </button>
-                      <button 
-                        className={styles.actionButton} 
-                        onClick={() => handleCancel(appointment.id)}
-                      >
-                        Cancel
-                      </button>
+                {currentAppointments.map(appointment => {
+                  const statusLower = appointment.Status.toLowerCase();
+                  const canReschedule = !["partially complete", "follow-up", "rejected"].includes(statusLower);
+
+                  return (
+                    <div key={appointment.id} className={styles.card}>
+                      <p><strong>Date:</strong> {new Date(appointment.AppointmentDate).toLocaleDateString()}</p>
+                      <p><strong>Dentist:</strong> {appointment.Dentist.DentistName}</p>
+                      <p><strong>Patient Status:</strong> {appointment.patientStatus === "new" ? "New" : "Returning"}</p>
+                      <p><strong>Status:</strong> {appointment.Status}</p>
+                      <div>
+                        {canReschedule && (
+                          <>
+                            <button 
+                              className={styles.actionButton} 
+                              onClick={() => openModal(appointment)}
+                            >
+                              Reschedule
+                            </button>
+                            <button 
+                              className={styles.actionButton} 
+                              onClick={() => handleCancel(appointment.id)}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )}
+                        {appointment.Status === "rejected" && (
+                          <button
+                            className={styles.actionButton}
+                            onClick={() => handleViewRejectionReason(appointment.rejection_reason)}
+                          >
+                            View Reason
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <div className={styles.paginationContainer}>
                 <button
@@ -724,6 +748,28 @@ const PatientDashboard = () => {
             ) : (
               <p>No diagnoses available.</p>
             )}
+          </div>
+        </div>
+      )}
+
+      {viewReasonModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Rejection Reason</h3>
+            <div className={styles.modalcont}>
+              <p>{reasonToView}</p>
+            </div>
+            <div className={styles.modalButtons}>
+              <button
+                className={styles.actionButton}
+                onClick={() => {
+                  setViewReasonModalOpen(false);
+                  setReasonToView("");
+                }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

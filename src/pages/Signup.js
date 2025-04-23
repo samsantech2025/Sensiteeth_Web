@@ -140,6 +140,18 @@ const Signup = () => {
               required
             />
           </div>
+          <div className={styles.inputGroup}>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={styles.input}
+              required
+            >
+              <option value="patient">Patient</option>
+              <option value="dentist">Dentist</option>
+            </select>
+          </div>
           <button type="submit" className={styles.buttonFilledPrimary} disabled={loading}>
             {loading ? "Signing up..." : "Sign Up"}
           </button>

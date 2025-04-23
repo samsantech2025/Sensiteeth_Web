@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react"; // Import useEffect for side effects
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PatientDashboard from "./pages/PatientDashboard";
@@ -8,6 +9,14 @@ import PatientLogin from "./pages/PatientLogin";
 import PatientSignUp from "./pages/PatientSignUp";
 
 const App = () => {
+  useEffect(() => {
+    document.title = "SensiTeeth";
+    const favicon = document.querySelector("link[rel='icon']");
+    if (favicon) {
+      favicon.href = "/favicon.png";
+    }
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -24,7 +33,7 @@ const App = () => {
           }
         />
         <Route
-          path="/dentist-dashboard/*" // Wildcard for nested routes
+          path="/dentist-dashboard/*"
           element={
             <ProtectedRoute role="dentist">
               <DentistDashboard />

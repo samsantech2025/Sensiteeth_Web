@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import styles from "./PatientSignUp.module.css";
+import icon from "../assets/icon.png";
 
 const PatientSignUp = () => {
   const [formData, setFormData] = useState({
@@ -109,8 +110,14 @@ const PatientSignUp = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Patient Sign Up</h2>
-        <p className={styles.subtitle}>Create your dental care account</p>
+      <div className={styles.logoContainer}>
+        <img src={icon} alt="icon" className={styles.icon} />
+      </div>
+          <hr className={styles.divider} />
+          <h2 className={styles.title}>
+            <span className={styles.wordPrimary}>Patient</span>{" "}
+            <span className={styles.wordAccent}>Sign-Up</span>
+          </h2>
         <form onSubmit={handleSignUp}>
           {error && <p className={styles.error}>{error}</p>}
           {success && <p className={styles.success}>{success}</p>}

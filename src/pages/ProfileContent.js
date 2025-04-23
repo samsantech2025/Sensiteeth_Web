@@ -197,7 +197,10 @@ const ProfileContent = ({ dentistId, dentistData, setDentistData, setProfileWarn
   return (
     <div className={styles.profileSection}>
       <div className={styles.dentistSectionCont1}>
-        <h2 className={styles.subtitle}>Dentist Profile</h2>
+        <h1 className={styles.title}>
+          <span className={styles.wordPrimary}>Dentist</span>{" "}
+          <span className={styles.wordAccent}>Profile</span>
+        </h1>
         <div className={styles.profileFormContainer}>
           <form onSubmit={handleProfileSubmit} className={styles.profileForm}>
             <div className={styles.formGroup}>
@@ -259,7 +262,7 @@ const ProfileContent = ({ dentistId, dentistData, setDentistData, setProfileWarn
               />
               {profileForm.LicenseNoUrl && (
                 <div className={styles.licensePreview}>
-                  <p>Current License Uploaded</p>
+                  <label>Current License Uploaded:</label>
                   <button 
                     type="button" 
                     onClick={handleViewLicense}
@@ -276,7 +279,10 @@ const ProfileContent = ({ dentistId, dentistData, setDentistData, setProfileWarn
       </div>
 
       <div className={styles.dentistSectionCont2}>
-        <h2 className={styles.subtitle}>Create Secretary Account</h2>
+        <h1 className={styles.title}>
+          <span className={styles.wordPrimary}>Create Secretary</span>{" "}
+          <span className={styles.wordAccent}>Account</span>
+        </h1>
         {secretaryError && <p className={styles.error}>{secretaryError}</p>}
         <div className={styles.profileFormContainer}>
           <form onSubmit={handleSecretarySubmit} className={styles.profileForm}>

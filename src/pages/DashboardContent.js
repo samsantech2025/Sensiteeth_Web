@@ -82,26 +82,29 @@ const DashboardContent = ({ dentistId }) => {
 
   return (
     <>
-      <h1 className={styles.title}>Dentist Dashboard</h1>
+      <h1 className={styles.title}>
+          <span className={styles.wordPrimary}>Dentist</span>{" "}
+          <span className={styles.wordAccent}>Dashboard</span>
+      </h1>
       <div className={styles.statsContainer}>
         <div className={styles.statCard}>
-          <h3>Total Patients</h3>
+          <h3>Total<br />Patients</h3>
           <p>{totalPatients}</p>
         </div>
         <div className={styles.statCard}>
-          <h3>New Patients (Last 30 Days)</h3>
+          <h3>New Patients<br />(Last 30 Days)</h3>
           <p>{newPatients}</p>
         </div>
         <div className={styles.statCard}>
-          <h3>Total Consultations</h3>
+          <h3>Total<br />Consultations</h3>
           <p>{totalConsultations}</p>
         </div>
         <div className={styles.statCard}>
-          <h3>Completed Consultations</h3>
+          <h3>Completed<br />Consultations</h3>
           <p>{completedConsultations}</p>
         </div>
         <div className={styles.statCard}>
-          <h3>Upcoming Appointments</h3>
+          <h3>Upcoming<br />Appointments</h3>
           <p>{upcomingAppointments}</p>
         </div>
       </div>

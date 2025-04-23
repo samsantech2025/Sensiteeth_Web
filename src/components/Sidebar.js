@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import styles from '../pages/DentistDashboard.module.css';
+import logo from "../assets/text-logo.png";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -30,7 +31,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         >
           {isOpen ? '☰' : '➤'}
         </button>
-        {isOpen && <h2 className={styles.sidebarTitle}>Dentist Portal</h2>}
+        {isOpen && <div className={styles.logoContainer}>
+        <img src={logo} alt="Logo" className={styles.logo} />
+      </div>}
       </div>
       {isOpen && (
         <ul className={styles.sidebarMenu}>

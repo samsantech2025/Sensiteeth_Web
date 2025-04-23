@@ -2,24 +2,62 @@
 .dashboard {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(to bottom, rgba(0, 105, 92, 0.3), #f5f7fa); /* Enhanced teal gradient */
+  background: #fff;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Arial', sans-serif; /* Modern font */
 }
 
 /* Header with teal accent */
 .header {
-  background: linear-gradient(to right, #00695c, #004d40); /* Teal gradient */
+  background: #385294;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Teal shadow */
-  color: #ffffff; /* White text */
+  box-shadow: 0 4px 12px rgba(56,83,148,0.3);
+  color: #ffffff;
 }
 
-/* Title with modern typography */
+.logoContainer {
+  position: relative;
+  height: 50px;
+  width: auto;
+  padding: 5px 20px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.logo {
+  max-height: 100%;
+  max-width: 100%;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px){
+  .logoContainer {
+    position: relative;
+    height: 50px;
+    width: auto;
+    padding: 5px 5px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    z-index: 10;
+  }
+  
+  .logo {
+    max-height: 100%;
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+  }
+}
+
 .title {
   font-size: 28px;
   font-weight: 700;
@@ -27,163 +65,235 @@
   margin: 0;
 }
 
-/* Logout button in header */
 .logoutButton {
-  padding: 8px 16px;
-  background: #ffffff; /* White background */
-  color: #00695c; /* Teal text */
-  border: none;
-  border-radius: 8px;
+  position: relative;
+  background-color: #fff;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 12px 20px;
+  border-radius: 100px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 1px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0, 105, 92, 0.2); /* Teal shadow */
-  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  text-transform: uppercase;
+  z-index: 100;
 }
 
 .logoutButton:hover {
-  background: #e0f2f1; /* Light teal hover */
-  transform: translateY(-2px); /* Lift effect */
+  background-color: transparent;
+  color: #fff;
+  border-color: #fff;
 }
 
-/* Main content area */
+h1.patientDashboardTitle {
+  text-align: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.wordPrimary,
+.wordAccent {
+  font-family: var(--font-accent);
+  color: var(--color-primary);
+  font-weight: 500;
+  font-size: 35px;
+}
+
+.wordAccent {
+  font-style: italic;
+}
+
+.divider {
+  width: 50%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.dividerMiddle{
+  width: 50%;
+  margin-top: 20px;
+  margin-bottom: -20px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
 .content {
   padding: 30px;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 40px; /* Modern spacing between sections */
+  gap: 40px;
 }
 
-/* Section with clean styling */
 .section {
   width: 100%;
 }
 
-/* Subtitle with modern teal typography */
 .subtitle {
   font-size: 22px;
   margin-bottom: 20px;
-  color: #00695c; /* Teal */
+  color: #385294;
   font-weight: 600;
   letter-spacing: 0.3px;
   text-align: left;
 }
 
-/* Card container for appointments and history */
 .cardContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
-/* Card design for appointments and history */
 .card {
-  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle white gradient */
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.2); /* Enhanced teal shadow */
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc);
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(56,83,148,0.2);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .card:hover {
-  transform: translateY(-5px); /* Lift effect */
-  box-shadow: 0 6px 16px rgba(0, 105, 92, 0.3); /* Stronger shadow on hover */
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(56,83,148,0.3);
 }
 
-/* Card content */
 .card p {
   margin: 5px 0;
-  color: #212121; /* Black87 */
+  color: #212121;
   font-size: 16px;
 }
 
 .card p strong {
-  color: #00695c; /* Teal */
+  color: #385294;
   font-weight: 600;
 }
 
-/* Action button with modern teal design */
-.actionButton {
-  padding: 6px 12px;
-  margin-right: 5px;
-  background: linear-gradient(to bottom, #00695c, #004d40); /* Teal gradient */
-  color: #ffffff; /* White */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 105, 92, 0.5); /* Teal shadow */
-  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  font-size: 14px;
+.actionButton,
+.button {
+  background-color: var(--color-primary);
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-family: var(--font-primary);
   font-weight: 500;
+  min-width: 230px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  justify-content: center;
+  display: grid;
+  margin: auto;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  margin-top: 15px;
 }
 
-.actionButton:hover {
-  background: #003d33; /* Darker teal */
-  transform: translateY(-2px); /* Slight lift effect */
+.actionButton:hover,
+.button:hover {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .actionButton:disabled {
-  background-color: #757575; /* Grey */
-  box-shadow: none; /* Remove shadow when disabled */
+  background-color: #757575;
+  color: #fff;
+  border: 1px solid #757575;
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
-/* Primary button for scheduling */
-.button {
-  padding: 10px 20px;
-  background: linear-gradient(to bottom, #00695c, #004d40); /* Teal gradient */
-  color: #ffffff; /* White */
-  border: none;
-  border-radius: 12px;
+.buttonSched {
+  background-color: var(--color-primary);
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  padding: 20px 26px;
+  border-radius: 100px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  min-width: 230px;
+  font-size: 12px;
+  letter-spacing: 1px;
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 4px 8px rgba(0, 105, 92, 0.5); /* Teal shadow */
-  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 16px;
-  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  justify-content: center;
+  display: grid;
+  margin: auto;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  margin-top: 15px;
 }
 
-.button:hover {
-  background: #003d33; /* Darker teal */
-  transform: translateY(-2px); /* Lift effect */
+.buttonSched:hover{
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
-/* Placeholder text for empty sections */
+.buttonSched:disabled {
+  background-color: #757575;
+  color: #fff;
+  border: 1px solid #757575;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.buttonPatientRow {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.buttonPatientRow .actionButton{
+  min-width: 145px!important;
+  @media (max-width: 768px){
+    min-width: 230px!important;
+    margin-bottom: 0px!important;
+    margin-top: 5px!important;
+  }
+}
+
+
+
+
 .noData {
   text-align: center;
-  color: #757575; /* Grey */
+  color: #757575;
   font-size: 16px;
   padding: 20px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 105, 92, 0.1); /* Light teal shadow */
+  box-shadow: 0 2px 6px rgba(56,83,148,0.1);
 }
 
-/* Textarea with teal focus state */
 .textarea {
   width: 100%;
-  padding: 10px;
+  padding: 15px 20px;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #212121; /* Black87 */
-  background: #ffffff; /* White */
-  transition: border-color 0.2s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0, 105, 92, 0.1); /* Subtle teal shadow */
-  resize: vertical;
+  border-radius: 50px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--color-accent);
+  background: #ffffff;
+  font-family: var(--font-primary);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .textarea:focus {
-  border-color: #00695c; /* Teal */
   outline: none;
-  box-shadow: 0 0 4px rgba(0, 105, 92, 0.3); /* Subtle teal glow */
+  border-color: none;
+  box-shadow: 0 0 4px rgba(56, 82, 148, 0.3);
 }
 
-/* Modal overlay */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -197,39 +307,84 @@
   z-index: 1000;
 }
 
-/* Modal with modern design */
 .modal {
-  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle gradient */
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 800px; /* Adjusted to match AppointmentModal */
-  max-height: 80vh; /* Limit height */
-  overflow-y: auto; /* Scroll if needed */
-  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Enhanced teal shadow */
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc);
+  padding: 40px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(56,83,148,0.3);
+  @media (max-width: 768px){
+    padding: 40px 20px;
+  }
 }
 
-/* Modal title */
+.preTitleModal {
+  font-family: var(--font-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 12px!important;
+  letter-spacing: 0px;
+}
+
+.dividerModal {
+  width: 20%;
+  margin-top: 20px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.PatientDashboardTitleSectionModal{
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.buttonContainerModal {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.buttonContainerModal .actionButton {
+  min-width: 100px;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .buttonContainerModal {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .buttonContainerModal .actionButton {
+    min-width: 100%;
+  }
+}
+
+
 .modal h3 {
   margin-top: 0;
-  color: #00695c; /* Teal */
+  color: #385294;
   font-size: 20px;
   font-weight: 600;
 }
 
-/* Modal content */
 .modal p {
   margin: 10px 0;
-  color: #212121; /* Black87 */
+  color: #212121;
   font-size: 16px;
 }
 
 .modal p strong {
-  color: #00695c; /* Teal */
+  color: #385294;
   font-weight: 600;
 }
 
-/* Modal buttons */
 .modalButtons {
   display: flex;
   gap: 10px;
@@ -237,7 +392,6 @@
   margin-top: 20px;
 }
 
-/* Form grid for AppointmentModal */
 .formGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -253,56 +407,80 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #00695c; /* Teal */
+  color: #385294;
 }
 
-/* Input field styling */
-.inputField {
+
+.inputField{
   width: 100%;
-  padding: 8px;
+  padding: 15px 20px;
   border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border-radius: 50px!important;
   box-sizing: border-box;
-  font-size: 16px;
-  color: #212121; /* Black87 */
-  transition: border-color 0.2s ease-in-out;
+  font-size: 14px;
+  color: var(--color-accent);
+  background: #ffffff;
+  font-family: var(--font-primary);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .inputField:focus {
-  border-color: #00695c; /* Teal */
   outline: none;
-  box-shadow: 0 0 4px rgba(0, 105, 92, 0.3); /* Subtle teal glow */
+  border-color: none;
+  box-shadow: 0 0 4px rgba(56, 82, 148, 0.3);
 }
 
-/* Calendar-specific styles */
+
+.filterPatientSelect{
+  width: 15%;
+  margin-top: 0px;
+  padding: 10px 20px!important;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px!important;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--color-accent);
+  background: #ffffff;
+  font-family: var(--font-primary);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  @media (max-width: 768px){
+    width: 55%;
+  }
+}
+
+.filterPatientSelect:focus {
+  outline: none;
+  border-color: none;
+  box-shadow: 0 0 4px rgba(56, 82, 148, 0.3);
+}
+
+
 .calendar {
   width: 100%;
   max-width: 600px;
-  border: 1px solid #e0e0e0; /* Light grey border */
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background: linear-gradient(to bottom, #ffffff, #f9fbfc); /* Subtle gradient */
-  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.2); /* Teal shadow */
+  background: linear-gradient(to bottom, #ffffff, #f9fbfc);
+  box-shadow: 0 4px 12px rgba(56,83,148,0.2);
 }
 
-/* Available (green) and unavailable (red) tiles */
+/* Keep available as green */
 .available {
-  background-color: #d4edda !important; /* Light green */
-  color: #155724 !important; /* Dark green text */
+  background-color: #d4edda !important;
+  color: #155724 !important;
 }
 
 .unavailable {
-  background-color: #f8d7da !important; /* Light red */
-  color: #721c24 !important; /* Dark red text */
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
 }
 
-/* Error message */
 .error {
-  color: #721c24; /* Dark red */
+  color: #721c24;
   font-size: 0.9em;
   margin-top: 5px;
 }
 
-/* Button container for modal */
 .buttonContainer {
   display: flex;
   flex-direction: row;
@@ -310,27 +488,37 @@
   gap: 10px;
 }
 
-/*Pagination*/
-/* In PatientDashboard.module.css */
 .paginationButton {
   margin: 0 5px;
   padding: 5px 10px;
   border: 1px solid #ccc;
   background-color: #f9f9f9;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 15px;
   margin-top: 15px;
 }
+
 .paginationButton:hover {
-  background-color: #e0e0e0;
+  background-color: #223259;
+color: #fff;
 }
+
 .paginationButton:disabled {
-  background-color: #f0f0f0;
+  background-color: transparent;
+    color: #223259;
   cursor: not-allowed;
   opacity: 0.6;
 }
+
 .paginationButtonActive {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
+  background-color: #385294;
+  color: #fff;
+  border-color: #385294;
+}
+
+.paginationContainer,
+.paginationInfo {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import styles from './PatientDashboard.module.css';
 import AppointmentModal from "./AppointmentModal";
+import logo from "../assets/light-logo.png";
 
 const PatientDashboard = () => {
   const navigate = useNavigate();
@@ -493,13 +494,23 @@ const PatientDashboard = () => {
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Appointment Dashboard</h1>
+      <div className={styles.logoContainer}>
+        <img src={logo} alt="Logo" className={styles.logo} />
+      </div>
         <button className={styles.logoutButton} onClick={handleSignOut}>Sign Out</button>
       </header>
       
       <div className={styles.content}>
         <section className={styles.section}>
-          <h2 className={styles.subtitle}>Upcoming Appointments</h2>
+        <h1 className={styles.patientDashboardTitle}>
+            <span className={styles.wordPrimary}>Appointment</span>{" "}
+            <span className={styles.wordAccent}>Dashboard</span>
+          </h1>
+          <hr className={styles.divider} />
+          <h3 className={styles.PatientDashboardTitleSection}>
+            <span className={styles.wordPrimary}>Upcoming</span>{" "}
+            <span className={styles.wordAccent}>Appointments</span>
+          </h3>
           {followUpNotifications.length > 0 && (
             <div style={{ backgroundColor: '#fffae6', padding: '15px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ffd700' }}>
               <h3 style={{ margin: '0 0 10px 0', color: '#d4a017' }}>Follow-Up Reminder</h3>
@@ -516,6 +527,7 @@ const PatientDashboard = () => {
               Filter by Status:
             </label>
             <select
+              className={styles.filterPatientSelect}
               id="statusFilter"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -545,18 +557,20 @@ const PatientDashboard = () => {
                       <div>
                         {canReschedule && (
                           <>
-                            <button 
-                              className={styles.actionButton} 
-                              onClick={() => openModal(appointment)}
-                            >
-                              Reschedule
-                            </button>
-                            <button 
-                              className={styles.actionButton} 
-                              onClick={() => handleCancel(appointment.id)}
-                            >
-                              Cancel
-                            </button>
+                            <div className={styles.buttonPatientRow}>
+                              <button 
+                                className={styles.actionButton} 
+                                onClick={() => openModal(appointment)}
+                              >
+                                Reschedule
+                              </button>
+                              <button 
+                                className={styles.actionButton} 
+                                onClick={() => handleCancel(appointment.id)}
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           </>
                         )}
                         {appointment.Status === "rejected" && (
@@ -606,11 +620,14 @@ const PatientDashboard = () => {
           ) : (
             <p className={styles.noData}>No upcoming appointments match the selected status.</p>
           )}
-          <button className={styles.button} onClick={() => openModal()}>Schedule New Appointment</button>
+          <button className={styles.buttonSched} onClick={() => openModal()}>Schedule New Appointment</button>
         </section>
-
+        <hr className={styles.dividerMiddle} />
         <section className={styles.section}>
-          <h2 className={styles.subtitle}>Dental History</h2>
+        <h3 className={styles.PatientDashboardTitleSection}>
+            <span className={styles.wordPrimary}>Dental</span>{" "}
+            <span className={styles.wordAccent}>History</span>
+          </h3>
           {(patientHistory.length > 0 || completedConsultations.length > 0) ? (
             <>
               <div className={styles.cardContainer}>
@@ -689,8 +706,13 @@ const PatientDashboard = () => {
 
       {isDiagnosisModalOpen && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modal} style={{ maxHeight: "90vh", overflowY: "auto" }}>
-            <h3>Diagnosis History</h3>
+          <div className={styles.modal} style={{ maxHeight: "80vh", overflowY: "auto" }}>
+          <h3 className={styles.PatientDashboardTitleSection} style={{ textAlign: "center" }}>
+          <p className={styles.preTitleModal}>Patient Overview</p>
+            <hr className={styles.dividerModal} />
+            <span className={styles.wordPrimary}>Diagnosis</span>{" "}
+            <span className={styles.wordAccent}>History</span>
+          </h3>
             {selectedDiagnoses && selectedDiagnoses.length > 0 ? (
               <>
                 <div style={{ marginBottom: "20px" }}>

@@ -1,39 +1,58 @@
-/* Container with modern dental clinic gradient */
+/* Container with modern gradient */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%); /* Light blue to white */
+  background: linear-gradient(to bottom, rgba(56,83,148,0.1), #F8F9FC);
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* Card with clean, dental-inspired design */
+/* Card with sleek design */
 .card {
-  background: #ffffff; /* Pure white for a clinical feel */
-  padding: 2.5rem;
-  border-radius: 16px; /* Softer corners */
-  box-shadow: 0 8px 24px rgba(0, 105, 92, 0.15); /* Subtle teal shadow */
+  background: linear-gradient(to bottom, #ffffff, #F8F9FC);
+  padding: 2rem 2.5rem;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(56,83,148,0.2);
   width: 100%;
-  max-width: 640px; /* Wider for form fields */
+  max-width: 700px;
   display: flex;
   flex-direction: column;
-  gap: 25px; /* Generous spacing */
-  border-top: 4px solid #00695c; /* Teal accent at the top */
+  gap: 20px;
   transition: transform 0.3s ease-in-out;
 }
 
 .card:hover {
-  transform: translateY(-5px); /* Subtle hover lift */
+  transform: translateY(-5px);
 }
+
+/*START - Logo*/
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.icon {
+  height: 50px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .icon {
+    height: 32px;
+  }
+}
+/*END*/
+
 
 /* Title with modern teal typography */
 .title {
   text-align: center;
-  color: #00695c; /* Teal */
-  font-size: 30px; /* Slightly larger for emphasis */
+  color: var(--color-primary);
   font-weight: 700;
   letter-spacing: 0.5px;
   margin: 0;
@@ -45,7 +64,62 @@
   color: #757575; /* Grey */
   font-size: 16px;
   margin: 0;
-  font-weight: 400;
+}
+
+.inputGroup {
+  margin-bottom: 15px;
+}
+
+/* Inputs using font-primary */
+.input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--color-accent);
+  background: #ffffff;
+  font-family: var(--font-primary);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 4px rgba(56, 82, 148, 0.3);
+}
+
+/* Error message with modern styling */
+.error {
+  color: #e44d3a; /* Red */
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+  background: rgba(228, 77, 58, 0.1); /* Light red background */
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* Text with modern link styling */
+.text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.link {
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
 /* Form grid for two-column layout */
@@ -68,30 +142,11 @@
 }
 
 /* Label styling */
-.inputGroup label {
-  color: #00695c; /* Teal */
+.inputGroup label, .inputGroupFull label{
+  color: #385294;
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 8px;
-}
-
-/* Modern input design */
-.input {
-  width: 100%;
-  padding: 14px; /* Taller inputs for comfort */
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-sizing: border-box;
-  font-size: 16px;
-  color: #212121; /* Black87 */
-  background: #f9fbfc; /* Off-white for softness */
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #00695c; /* Teal */
-  box-shadow: 0 0 6px rgba(0, 105, 92, 0.2); /* Teal glow */
 }
 
 .input::placeholder {
@@ -111,37 +166,43 @@
 
 /* Success message with teal styling */
 .success {
-  color: #00695c; /* Teal */
+  color: #385294;
   font-size: 14px;
   margin-bottom: 15px;
   text-align: center;
-  background: rgba(0, 105, 92, 0.1); /* Light teal background */
+  background: rgba(56,83,148,.1);
   padding: 8px;
   border-radius: 8px;
 }
 
 /* Modern button design */
 .button {
-  width: 100%;
-  padding: 14px; /* Taller button */
-  background: #00695c; /* Solid teal */
-  color: #ffffff; /* White */
-  border: none;
-  border-radius: 10px; /* Slightly rounded */
+  background-color: var(--color-primary);
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  padding: 17px 24px;
+  border-radius: 100px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  min-width: 250px;
+  font-size: 12px;
+  letter-spacing: 1px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Teal shadow */
-  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  justify-content: center;
+  display: grid;
+  margin: auto;
+  text-transform: uppercase;
 }
 
 .button:hover:not(:disabled) {
-  background: #004d40; /* Darker teal */
-  transform: translateY(-2px); /* Lift effect */
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .button:disabled {
-  background: #b0bec5; /* Grey */
+  background: #757575;
   box-shadow: none;
   cursor: not-allowed;
 }
@@ -155,7 +216,7 @@
 }
 
 .link {
-  color: #00695c; /* Teal */
+  color: #385294;
   cursor: pointer;
   text-decoration: none;
   font-weight: 600;
@@ -163,10 +224,13 @@
 }
 
 .link:hover {
-  color: #004d40; /* Darker teal */
+  color: #385294;
   text-decoration: underline;
 }
 
+.formGrid {
+  margin-bottom: 20px;
+}
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .formGrid {
@@ -181,4 +245,57 @@
     padding: 1.5rem;
     max-width: 100%;
   }
+}
+
+
+.wordPrimary {
+  font-family: var(--font-accent);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.wordAccent {
+  font-family: var(--font-accent);
+  color: var(--color-primary);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.preTitle{
+  font-family: var(--font-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0px;
+}
+
+.divider {
+  width: 15%;
+  margin-top: 5px;
+  margin-bottom: -15px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+
+h1 {
+  font-size: 60px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+  margin: 10px 0;
+}
+
+h2 {
+  font-size: 45px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+  margin: 10px 0!important;
+}
+
+h3 {
+  font-size: 36px;
+  font-weight: 400;
+  font-family: var(--font-primary);
 }

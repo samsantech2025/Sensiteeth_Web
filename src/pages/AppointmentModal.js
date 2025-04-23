@@ -186,7 +186,27 @@ const AppointmentModal = ({
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <h2>{appointment ? "Reschedule Appointment" : "Schedule Appointment"}</h2>
+      <>
+        {appointment ? (
+          <>
+            <h3 className={styles.PatientDashboardTitleSectionModal}>
+              <p className={styles.preTitleModal}>Update Booking</p>
+              <hr className={styles.dividerModal} />
+              <span className={styles.wordPrimary}>Reschedule</span>{" "}
+              <span className={styles.wordAccent}>Appointment</span>
+            </h3>
+          </>
+        ) : (
+          <>
+            <h3 className={styles.PatientDashboardTitleSectionModal}>
+              <p className={styles.preTitleModal}>New Consultation</p>
+              <hr className={styles.dividerModal} />
+              <span className={styles.wordPrimary}>Schedule</span>{" "}
+              <span className={styles.wordAccent}>Appointment</span>
+            </h3>
+          </>
+        )}
+      </>
         <form onSubmit={submitForm}>
           <div className={styles.formGrid}>
             <div>
@@ -346,7 +366,7 @@ const AppointmentModal = ({
               {dateError && <p className={styles.error}>{dateError}</p>}
             </div>
           </div>
-          <div className={styles.buttonContainer}>
+          <div className={styles.buttonContainerModal}>
             <button type="button" onClick={onClose} className={styles.actionButton}>Close</button>
             <button type="submit" className={styles.actionButton} disabled={!!dateError}>Submit</button>
           </div>

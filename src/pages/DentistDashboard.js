@@ -7,6 +7,8 @@ import DashboardContent from "./DashboardContent";
 import ConsultationsContent from "./ConsultationsContent";
 import ProfileContent from "./ProfileContent";
 import DentistCalendar from "./DentistCalendar";
+import "../styles/Global.css";
+
 
 const DentistDashboard = () => {
   const navigate = useNavigate();

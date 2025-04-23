@@ -1,0 +1,73 @@
+/* Importing fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Instrument+Serif&display=swap');
+
+/* Root variables for fonts and colors */
+:root {
+  /* Fonts */
+  --font-primary: 'Inter', sans-serif;
+  --font-secondary: 'Inter', sans-serif;
+  --font-accent: 'Instrument Serif', serif;
+
+  /* Colors */
+  --color-primary: #385294;
+  --color-secondary: #EFF6FA;
+  --color-accent: #0B121E;
+  --color-default: #FFFFFF;
+}
+
+h1 {
+  font-size: 60px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+}
+
+h2 {
+  font-size: 45px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+}
+
+h3 {
+  font-size: 36px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-primary);
+  color: var(--color-accent);
+  background-color: var(--color-secondary);
+}
+
+/* Example accent font usage */
+.accent-text {
+  font-family: var(--font-accent);
+}
+
+/* Example for using primary color */
+.primary-bg {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+/* Filled dark button using primary color */
+.buttonFilledPrimary {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: 2px solid var(--color-primary);
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .buttonFilledPrimary:hover {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+  

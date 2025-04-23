@@ -333,10 +333,13 @@ const ConsultationsContent = ({ dentistId }) => {
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.subtitle}>Consultations</h2>
+      <h1 className={styles.title}>
+        <span className={styles.wordPrimary}>Dentist</span>{" "}
+        <span className={styles.wordAccent}>Consultations</span>
+      </h1>
       <div className={styles.filterContainer}>
         <div className={styles.filterGroup}>
-          <label htmlFor="statusFilter">Filter by Status: </label>
+          <label className={styles.filterLabel1} htmlFor="statusFilter">Filter by Status: </label>
           <select
             id="statusFilter"
             value={statusFilter}
@@ -353,7 +356,7 @@ const ConsultationsContent = ({ dentistId }) => {
           </select>
         </div>
         <div className={styles.searchGroup}>
-          <label htmlFor="patientSearch">Search by Patient Name: </label>
+          <label className={styles.filterLabel2} htmlFor="patientSearch">Search by Patient Name: </label>
           <input
             id="patientSearch"
             type="text"
@@ -491,13 +494,17 @@ const ConsultationsContent = ({ dentistId }) => {
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal} style={{ maxHeight: "90vh", overflowY: "auto" }}>
-            <h3>Diagnosis History</h3>
+          <h1 className={styles.title}>
+          <span className={styles.wordPrimary}>Diagnosis</span>{" "}
+          <span className={styles.wordAccent}>History</span>
+          </h1>
             {selectedDiagnoses && selectedDiagnoses.length > 0 ? (
               <>
-                <div style={{ marginBottom: "20px" }}>
+                <div className={styles.diagnosisSelect} style={{ marginBottom: "20px" }}>
                   <label>
                     <strong>Select Diagnosis Record:</strong>
                     <select
+                    className={styles.filterSelect}
                       value={currentDiagnosis?.id || ""}
                       onChange={(e) => {
                         const selected = selectedDiagnoses.find(d => d.id === parseInt(e.target.value));
@@ -513,7 +520,7 @@ const ConsultationsContent = ({ dentistId }) => {
                     </select>
                   </label>
                 </div>
-
+                <hr className={styles.modalDivider}/>
                 {currentDiagnosis && (
                   <div className={styles.modalcont}>
                     <div className={styles.txtfieldcont}>
@@ -598,9 +605,12 @@ const ConsultationsContent = ({ dentistId }) => {
       {followUpModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3>Set Follow-Up Date</h3>
+          <h1 className={styles.title}>
+            <span className={styles.wordPrimary}>Set Follow-Up</span>{" "}
+            <span className={styles.wordAccent}>Date</span>
+          </h1>
             <div className={styles.modalcont}>
-              <label>
+              <label className={styles.followupDate}>
                 Follow-Up Date:
                 <input
                   type="datetime-local"
@@ -671,9 +681,12 @@ const ConsultationsContent = ({ dentistId }) => {
       {viewReasonModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3>Rejection Reason</h3>
+          <h1 className={styles.title}>
+            <span className={styles.wordPrimary}>Rejection</span>{" "}
+            <span className={styles.wordAccent}>Reason</span>
+          </h1>
             <div className={styles.modalcont}>
-              <p>{reasonToView}</p>
+              <p className={styles.rejectionReason}>{reasonToView}</p>
             </div>
             <div className={styles.modalButtons}>
               <button

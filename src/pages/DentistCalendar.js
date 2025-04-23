@@ -156,7 +156,10 @@ const DentistCalendar = ({ dentistId }) => {
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.subtitle}>My Availability Calendar</h2>
+      <h1 className={styles.title}>
+            <span className={styles.wordPrimary}>My Availability</span>{" "}
+            <span className={styles.wordAccent}>Calendar</span>
+          </h1>
       <div className={styles.calendarContainer}>
         <Calendar
           onClickDay={handleDateClick}

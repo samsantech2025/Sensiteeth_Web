@@ -1,145 +1,277 @@
-/* Container with modern dental clinic gradient */
+/*START - container format*/
 .container {
+  display: flex;
+  flex-direction: row-reverse; /* Swapped the column order */
+  min-height: 100vh;
+  width: 100%;
+  background: var(--color-default);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+.leftColumn,
+.rightColumn {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  width: 100%;
-  background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%); /* Light blue to white */
-  padding: 20px;
-  box-sizing: border-box;
+  height: 100vh;
 }
 
-/* Card with clean, dental-inspired design */
-.card {
-  background: #ffffff; /* Pure white for a clinical feel */
-  padding: 2.5rem;
-  border-radius: 16px; /* Softer corners */
-  box-shadow: 0 8px 24px rgba(0, 105, 92, 0.15); /* Subtle teal shadow */
-  width: 100%;
-  max-width: 420px; /* Slightly wider for modern spacing */
+.rightColumn {
+  width: 50%;
   display: flex;
-  flex-direction: column;
-  gap: 25px; /* Generous spacing */
-  border-top: 4px solid #00695c; /* Teal accent at the top */
-  transition: transform 0.3s ease-in-out;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-.card:hover {
-  transform: translateY(-5px); /* Subtle hover lift */
+
+/* Mobile */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+    height: auto;
+  }
+}
+/*END*/
+
+/*START - Carousel*/
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-/* Title with modern teal typography */
-.title {
-  text-align: center;
-  color: #00695c; /* Teal */
-  font-size: 30px; /* Slightly larger for emphasis */
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin: 0;
+.carouselImage {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  animation: slide 6s ease-in-out infinite;
+  border-radius: 20px; 
+  object-position: 50% 50%;
+  object-fit: cover;
 }
 
-/* Subtitle for added context */
-.subtitle {
-  text-align: center;
-  color: #757575; /* Grey */
-  font-size: 16px;
-  margin: 0;
-  font-weight: 400;
+.carouselImage:nth-child(1) {
+  animation-delay: 0s;
 }
 
-/* Input group for better spacing */
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px; /* More breathing room */
+.carouselImage:nth-child(2) {
+  animation-delay: 2s;
 }
 
-/* Label styling */
-.inputGroup label {
-  color: #00695c; /* Teal */
-  font-size: 14px;
+.carouselImage:nth-child(3) {
+  animation-delay: 4s;
+}
+
+@keyframes slide {
+  0%, 100% {
+    opacity: 0;
+  }
+  15%, 25% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0;
+  }
+  95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/*END*/
+
+/*START - Logo*/
+.logoContainer {
+  position: absolute;
+  top: 20px;
+  left: 57%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.logo {
+  height: 50px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .logoContainer {
+    position: absolute;
+    top: 20px;
+    left: 20%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+  
+  .logo {
+    height: 40px;
+    width: auto;
+  }
+}
+/*END*/
+
+
+.wordPrimary {
+  font-family: var(--font-accent);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.wordAccent {
+  font-family: var(--font-accent);
+  color: var(--color-primary);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.preTitle{
+  font-family: var(--font-primary);
+  color: var(--color-primary);
   font-weight: 600;
-  margin-bottom: 8px;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0px;
+  @media (max-width: 768px){
+    margin-top: 100px;
+  }
 }
 
-/* Modern input design */
+.divider {
+  width: 25%;
+  margin-top: 10px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+
+.inputGroup {
+  margin-bottom: 15px;
+}
+
+/* Inputs using font-primary */
 .input {
   width: 100%;
-  padding: 14px; /* Taller inputs for comfort */
+  padding: 15px 20px;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 50px;
   box-sizing: border-box;
-  font-size: 16px;
-  color: #212121; /* Black87 */
-  background: #f9fbfc; /* Off-white for softness */
+  font-size: 14px;
+  color: var(--color-accent);
+  background: #ffffff;
+  font-family: var(--font-primary);
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .input:focus {
   outline: none;
-  border-color: #00695c; /* Teal */
-  box-shadow: 0 0 6px rgba(0, 105, 92, 0.2); /* Teal glow */
+  border-color: var(--color-primary);
+  box-shadow: 0 0 4px rgba(56, 82, 148, 0.3);
 }
 
-.input::placeholder {
-  color: #b0bec5; /* Light grey for placeholders */
-}
-
-/* Error message with modern styling */
+/* Error stays red for contrast */
 .error {
-  color: #e44d3a; /* Red */
+  color: #e44d3a;
   font-size: 14px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   text-align: center;
-  background: rgba(228, 77, 58, 0.1); /* Light red background */
+  background: rgba(228, 77, 58, 0.1);
   padding: 8px;
   border-radius: 8px;
+  font-family: var(--font-secondary);
 }
 
-/* Modern button design */
-.button {
-  width: 100%;
-  padding: 14px; /* Taller button */
-  background: #00695c; /* Solid teal */
-  color: #ffffff; /* White */
-  border: none;
-  border-radius: 10px; /* Slightly rounded */
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 105, 92, 0.3); /* Teal shadow */
-  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
-
-.button:hover:not(:disabled) {
-  background: #004d40; /* Darker teal */
-  transform: translateY(-2px); /* Lift effect */
-}
-
-.button:disabled {
-  background: #b0bec5; /* Grey */
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
-/* Text with modern link styling */
+/* Text and link styling */
 .text {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 15px;
   font-size: 14px;
   color: #666;
+  font-family: var(--font-secondary);
 }
 
 .link {
-  color: #00695c; /* Teal */
+  color: var(--color-primary);
   cursor: pointer;
   text-decoration: none;
   font-weight: 600;
+  font-family: var(--font-primary);
   transition: color 0.2s ease-in-out;
 }
 
 .link:hover {
-  color: #004d40; /* Darker teal */
+  color: #2e417a;
   text-decoration: underline;
+}
+
+.form{
+  margin: 25px 5px;
+}
+
+.form > div:nth-child(2) > input{
+  margin-bottom: 15px;
+}
+
+/* Filled dark button using primary color */
+.buttonFilledPrimary {
+  background-color: var(--color-primary);
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  padding: 17px 24px;
+  border-radius: 100px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  min-width: 250px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  justify-content: center;
+  display: grid;
+  margin: auto;
+  text-transform: uppercase;
+}
+
+.buttonFilledPrimary:hover {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+h1 {
+  font-size: 60px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+}
+
+h2 {
+  font-size: 45px;
+  font-weight: 400;
+  font-family: var(--font-primary);
+}
+
+.PatientLogintitle{
+  padding-left: 80px;
+  padding-right: 80px;
+  @media (max-width: 768px){
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+h3 {
+  font-size: 36px;
+  font-weight: 400;
+  font-family: var(--font-primary);
 }
